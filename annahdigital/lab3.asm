@@ -258,7 +258,6 @@ main:
 	mov ah,09h
 	int 21h
 	
-	
 	endprog:
 	mov dx,offset endmessage
 	mov ah,09h
