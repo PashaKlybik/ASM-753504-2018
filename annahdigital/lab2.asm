@@ -189,7 +189,6 @@ main:
 	div bx
 	call printfromax
 
-
 	xchg cx,dx
 	mov dx,offset res2message
 	mov ah,09h
@@ -204,7 +203,6 @@ main:
 	mov dx,offset er2message
 	mov ah,09h
 	int 21h
-	
 	
 	endprog:
 	mov dx,offset endmessage
