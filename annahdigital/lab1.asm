@@ -8,7 +8,7 @@ d dw 0
 .code
 
 main:
-;вариант 1
+;var. 1
 mov ax, @data
 mov ds, ax
 
@@ -50,10 +50,8 @@ acubedissmaller:
 mov ax, c
 mul d
 add ax, b
+
 next:
-
-
-
 
 mov ax, 4c00h
 int 21h
