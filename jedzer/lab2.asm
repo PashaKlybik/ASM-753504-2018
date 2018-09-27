@@ -51,7 +51,7 @@ intErr:
     mov ax, 4c00h
     int 21h
 
-;number input porcedure. Gets number from ax and outputs it in console
+;number output porcedure. Gets number from ax and outputs it in console
 ;saves bx, cx, dx 
 OutInt proc
     push bx
