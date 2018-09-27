@@ -4,7 +4,7 @@ dataseg
     errorNotDigit db  13, 10, 'Entered symbol is not in [0, 9] or number is not in [-32768..32767]', 13, 10, '$'
     a dw ?
     b dw ?
-    ten dw 10
+    ten dw 10 
 codeseg
 
 ;number input porcedure. Reads number from console and saves it in AX
