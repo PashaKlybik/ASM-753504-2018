@@ -13,7 +13,6 @@ main:
     
     mov ax, a ; возведение а в куб
     mul a
-    xor dx, dx
     mul a
     mov bx, ax
 
@@ -21,9 +20,14 @@ main:
     mul b
 
     cmp bx, ax
-    jz then ; если равны
-    jnc greater
-    jmp then ; если меньше
+    jz then ; в условии строгое неравенство
+    jnc greater ; если больше
+    
+    then:
+        mov ax, c
+        mul d
+        adc ax, b
+        jmp exit
 
     greater:
         mov ax, c
@@ -40,16 +44,8 @@ main:
             and ax, b 
             jmp exit
         next:
-            mov ax, c
-            jmp exit
+            mov ax, с
             
-    then:
-        mov ax, c
-        mul d
-        adc ax, b
-
-
-
    exit:
     mov ax, 4c00h
     int 21h
