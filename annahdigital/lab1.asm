@@ -44,7 +44,6 @@ mov ax, a
 and ax, b
 JMP next
 
-
 ; если а^3 <= b^2
 acubedissmaller:
 mov ax, c
