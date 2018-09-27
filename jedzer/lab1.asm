@@ -1,4 +1,3 @@
-;.386
 model small
 .stack 100h
 
@@ -8,13 +7,11 @@ model small
     c dw 45
     d dw 17
 .code
-;20 
+
 
 start:
     mov ax, @data
     mov ds, ax
-
-    xor ax, ax
     
     mov ax, a  
     mov bx, b
@@ -27,16 +24,17 @@ start:
     mul c
     mul c
     cmp ax, bx
-        jne NotEqual1
-        
+        ;if (a AND b = c ^ 4) is false
+        jne Else1
+        ;if it is true we do: (ax = с / d / b + a) and jump to the end
         mov ax, c
         div d
         div b
         add ax, a
-        jmp all
+        jmp return
 
 
-    NotEqual1:
+    Else1:
         mov cx, c
         add cx, b
 
@@ -51,22 +49,25 @@ start:
         add ax, bx
         cmp ax, cx
 
-            jne NotEqual2
+            ;if (c + b = a ^ 3 + b ^ 3) is false
+            jne Else2
 
+            ;if it is true we do: (AX = a XOR (b + c)) and jump to the end
             mov ax, a
             mov bx, b
             add bx, c
             xor ax, bx
-            jmp all
+            jmp return
 
-        NotEqual2:
+        Else2:
+            ;here we do: (AX = b >> 3)
             mov bx, b
             shr bx, 3
             mov ax, bx
 
 
 
-all:
+return:
     mov ah, 4ch
     int 21h
 end start
