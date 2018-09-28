@@ -19,9 +19,8 @@ main:
     mov ax, b
     mul b
 
-    cmp bx, ax
-    jz then ; в условии строгое неравенство
-    jnc greater ; если больше
+    cmp ax, bx
+    jbe greater ; если больше операнд в bx
     
     then:
         mov ax, c
@@ -37,8 +36,7 @@ main:
         mov ax, a
         div b
         cmp bx, ax
-        jz equal
-        jmp next
+        jnz next
         equal:
             mov ax, a
             and ax, b 
