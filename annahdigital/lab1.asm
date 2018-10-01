@@ -8,7 +8,7 @@ d dw 0
 .code
 
 main:
-;вариант 1
+;variant 1
 mov ax, @data
 mov ds, ax
 
@@ -22,13 +22,13 @@ mov bx, ax
 mov ax, b
 mul ax
 
-;сравнение a^3 с b^2
+;comparing a^3 with b^2
 cmp bx, ax
-JA acubedisbigger
-JNA acubedissmaller
+JA bigger
+JNA smaller
 
-;если а^3 > b^2
-acubedisbigger:
+;if а^3 > b^2
+bigger:
 mov ax, c
 mul d
 mov bx, ax
@@ -38,22 +38,18 @@ div b
 cmp bx, ax
 JZ equal
 mov ax,c
-JMP next
+JMP exit
 equal:
 mov ax, a
 and ax, b
-JMP next
+JMP exit
 
-
-; если а^3 <= b^2
-acubedissmaller:
+; if а^3 <= b^2
+smaller:
 mov ax, c
 mul d
 add ax, b
-next:
-
-
-
+exit:
 
 mov ax, 4c00h
 int 21h
