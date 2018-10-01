@@ -22,11 +22,10 @@ main:
     cmp ax, bx
     jbe greater ; если больше операнд в bx
     
-    then:
-        mov ax, c
-        mul d
-        adc ax, b
-        jmp exit
+     mov ax, c
+     mul d
+     adc ax, b
+     jmp exit
 
     greater:
         mov ax, c
