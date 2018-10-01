@@ -1,9 +1,9 @@
 .model small
 .stack 256
 .data
-    a dw 65535
+    __cnt_digits dw 0
     ten dw 10
-    s db "Incorrect input$"
+    invalid_input_s db "Incorrect input$"
     zero db "Division by zero$"
 .code 
 
@@ -11,7 +11,7 @@ endl PROC
 	PUSH dx
 	PUSH ax
 
-	MOV dx, 0AH
+	MOV dl, 0AH
 	MOV ah, 02h
 	INT 21h
 	
@@ -21,10 +21,11 @@ endl PROC
 endl ENDP
 
 printf PROC
-	PUSH cx
-	MOV cx, 0
-	PUSH dx
 	PUSH ax
+	PUSH cx
+	PUSH dx
+
+	MOV cx, 0
 	MOV dx, 0 
 
 	division :
@@ -34,19 +35,13 @@ printf PROC
 	   	INC cx
 
 	    CMP ax, 0
-	    JZ true
-
-	    JMP division
-
-	true:
+	    JNZ division 
 
 	CMP cx, 0
-	JZ zero_came
-	JMP non_zero_came
-	
-	zero_came:
-		PUSH 0
-		MOV cx, 1
+	JNZ non_zero_came
+
+	PUSH 0
+	MOV cx, 1
 	
 	non_zero_came:
 		POP dx
@@ -55,9 +50,9 @@ printf PROC
 		INT 21h
 	LOOP non_zero_came
 
-	POP ax
 	POP dx
 	POP cx
+	POP ax
 	RET
 printf ENDP
 
@@ -68,8 +63,9 @@ scanf PROC
 
 	MOV bx, 0
 	MOV dx, 0
+	MOV __cnt_digits, 0
 
-	lo_op:
+	reading:
 		MOV ah, 01h
 		INT 21h
 
@@ -77,11 +73,9 @@ scanf PROC
 		JZ good_input
 
 		CMP al, 48 ; '0' = 48 '9' = 57 //47
-
 		JC bad_input
 
 		CMP al, 58 ;
-
 		JNC bad_input
 
 		MOV cl, al ; bx = bx * 10 + al - 48
@@ -97,28 +91,34 @@ scanf PROC
 		MOV ch, 0
 		ADD bx, cx
 
+		INC __cnt_digits
+
 		JC bad_input
-	JMP	lo_op
+	JMP	reading
 
 	good_input:
+		CMP __cnt_digits, 0
+		JZ reading
+
 		MOV ax, bx
 		JMP finish
 
 	bad_input:
-		LEA dx, s
+		LEA dx, invalid_input_s
 		MOV ah, 09h
 		INT 21h
 
 		MOV bx, 0
 		MOV dx, 0
 		MOV ax, 0
+		MOV __cnt_digits, 0
 		CALL endl
-	JMP lo_op
+	JMP reading
 		
 	finish:
-	POP dx
-	POP cx
-	POP bx
+		POP dx
+		POP cx
+		POP bx
 	RET
 scanf ENDP
 
