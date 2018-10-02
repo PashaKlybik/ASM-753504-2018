@@ -31,7 +31,7 @@ delete PROC ;процедура для удаления символа
 	ret 
 delete ENDP
 
-minusenter proc
+printminus proc
 	push ax
 	push dx	
 	mov dl,'-'
@@ -40,10 +40,10 @@ minusenter proc
 	pop dx
 	pop ax
 	ret 
-minusenter ENDP
+printminus ENDP
 
 ;процедура для вывода числа из AX на экран
-printfromax PROC	
+print PROC	
 	push ax
 	push bx	
 	push cx	
@@ -54,7 +54,7 @@ printfromax PROC
 	
 	test ax, 1000000000000000b
 	jz cycle1
-	call minusenter
+	call printminus
 	neg ax
 
 	cycle1:
@@ -78,7 +78,7 @@ printfromax PROC
 	pop bx
 	pop ax
 	RET
-printfromax endp
+print endp
 
 errormessageforlet PROC
 	push ax
@@ -163,7 +163,6 @@ minus:
 	mov si,1
 	jmp continuemark
 	
-	
 bckspace:
 	xchg bx,ax
 	xor dx,dx
@@ -212,7 +211,7 @@ main:
 	mov ah,09h
 	int 21h
 	call entertoax
-	call printfromax
+	call print
 	mov bx,ax
 
 	;ввод и вывод делителя
@@ -220,7 +219,7 @@ main:
 	mov ah,09h
 	int 21h
 	call entertoax
-	call printfromax
+	call print
 	xchg bx,ax
 
 	cmp bx,0
@@ -236,7 +235,7 @@ main:
 	xor dx,dx
 	cwd
 	idiv bx
-	call printfromax
+	call print
 
 
 	xchg cx,dx
@@ -250,14 +249,13 @@ main:
 	jz printit
 	neg ax
 	printit:
-	call printfromax
+	call print
 	jmp endprog
 	
 	errormess:
 	mov dx,offset er2message
 	mov ah,09h
 	int 21h
-	
 	
 	endprog:
 	mov dx,offset endmessage
