@@ -32,7 +32,7 @@ delete PROC ;процедура для удаления символа
 delete ENDP
 
 ;процедура для вывода числа из AX на экран
-printfromax PROC	
+print PROC	
 	push ax
 	push bx	
 	push cx	
@@ -62,7 +62,7 @@ printfromax PROC
 	pop bx
 	pop ax
 	RET
-printfromax endp
+print endp
 
 errormessageforlet PROC
 	push ax
@@ -79,7 +79,7 @@ errormessageforlet PROC
 	RET
 errormessageforlet endp
 
-entertoax PROC	;процедура для ввода числа с клавиатуры в регистр AX
+enternumber PROC	;процедура для ввода числа с клавиатуры в регистр AX
 
 	push bx	
 	push cx	
@@ -152,7 +152,7 @@ newnext:
 	pop cx
 	pop bx
 	RET
-entertoax endp
+enternumber endp
 
 main:
 
@@ -163,16 +163,16 @@ main:
 	mov dx,offset divfmessage
 	mov ah,09h
 	int 21h
-	call entertoax
-	call printfromax
+	call enternumber
+	call print
 	mov bx,ax
 
 	;ввод и вывод делителя
 	mov dx,offset divisfmessage
 	mov ah,09h
 	int 21h
-	call entertoax
-	call printfromax
+	call enternumber
+	call print
 	xchg bx,ax
 
 	cmp bx,0
@@ -187,8 +187,7 @@ main:
 	xchg cx,ax
 	xor dx,dx
 	div bx
-	call printfromax
-
+	call print
 
 	xchg cx,dx
 	mov dx,offset res2message
@@ -197,14 +196,13 @@ main:
 
 	;вывод остатка от деления
 	xchg cx,ax
-	call printfromax
+	call print
 	jmp endprog
 	
 	errormess:
 	mov dx,offset er2message
 	mov ah,09h
 	int 21h
-	
 	
 	endprog:
 	mov dx,offset endmessage
