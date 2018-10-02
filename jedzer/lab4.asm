@@ -81,7 +81,10 @@ EditLine proc
     CountinueScan:
         xor cx, cx
         xor ah, ah
+        mov bx, si
         CountTillSpace:
+            mov dx, si
+            dec dx
             lods string
             cmp al, ' '
             je IsItPolindrom
@@ -93,13 +96,8 @@ EditLine proc
     IsItPolindrom:
         ;at this point cx represents amount of symbols in the word
         ;si - position of the last symbol of the word + 1 (space after symbol)
-        ;P.S. holy fuck my eyes are bleeding when I'm looking at this shit 
-        dec si
-        sub si, cx
-        dec cx
-        add cx, si
-        mov bx, si ;save pos of first symbol
-        mov dx, cx ;and the last one
+        mov si, bx
+        mov cx, dx
         ;check if word is polyndrom
         BackWards:
             mov di, cx
@@ -107,8 +105,8 @@ EditLine proc
             cmp al, string[di]
             ;if not we delete it
             jne DeleteWord
-            cmp cx, bx 
-            je FrenchFin
+            cmp si, cx
+            jae FrenchFin
             dec cx
         jmp BackWards
         FrenchFin:
