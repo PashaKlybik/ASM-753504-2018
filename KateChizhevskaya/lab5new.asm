@@ -1,6 +1,10 @@
 .model small
 .stack 256
 .data
+    intermediate_number dw ?
+	input db "input1.txt", 0
+    output db "output.txt", 0
+	char db ?
 	rows dw ?
 	colunms dw ?
 	biggest_number dw ?
@@ -13,14 +17,94 @@
 	number_messege  db 'Entry the biggest number', 13, 10, '$'
 	new_line db 13, 10, '$'
 	tab_entry db 09, '$'
+	file_descriptor dw ?
 .code
+
+fileInput proc
+	push bx
+	push dx
+	push cx
+	mov bx,file_descriptor
+	xor ax,ax
+	jmp input_f
+	continue147:
+	mov ax,intermediate_number
+	cmp minus,1;  if - was inputed
+	JZ MinusNumber1
+	continue11:		
+		pop cx
+		pop dx
+		pop bx
+ret
+fileInput endp
+
+MinusNumber1:
+			neg ax
+jmp continue11 
+
+input_f:
+		PUSH AX
+		PUSH CX
+		PUSH DX
+		mov ah,3fh
+		lea dx, char
+		mov cx, 1
+		int 21h
+		xor ax,ax
+		mov al,char
+		xor cx, cx
+		cmp al, '-'
+		JZ MinusInput1
+		mov minus,0
+		sub AL,'0'
+		mov intermediate_number,ax
+		xor ax,ax
+	begin1:
+		mov bx,file_descriptor
+		xor ax,ax
+		mov ah, 3fh
+		lea dx, char
+		mov cx, 1
+		int 21h
+		mov al, char
+		cmp ax, 32
+		jz end11
+		sub AL,'0'
+		CMP AL, 16
+		JZ end11
+		xor cx, cx
+		MOV CH,0
+		MOV CL,AL
+		CMP CX,20
+		JZ end11
+		MOV AX,intermediate_number
+		MOV BX,10
+		MUL BX
+		XOR DX,DX
+		ADD AX, CX
+		mov intermediate_number,ax
+		JMP begin1
+
+	end11:
+			POP DX
+			POP CX
+			POP AX
+jmp continue147
+
+MinusInput1:
+			mov minus,1		
+			mov intermediate_number, 0
+JMP begin1
+
 allOutput proc
+
 		cmp ax,0
 		jl special
 		continue:
-		call output
+		call outputt
 	ret
 	allOutput endp
+
 
 	special:
 	call specialOutput
@@ -38,7 +122,7 @@ allOutput proc
 	ret
 	specialOutput endp
 
-    output proc
+    outputt proc
 		push ax
 		push cx
 		push dx
@@ -67,8 +151,8 @@ allOutput proc
 		pop dx
 		pop cx
 		pop ax
-		ret
-		output endp
+ret
+outputt endp
 
 messege_output proc
 	push ax
@@ -77,74 +161,6 @@ messege_output proc
 	pop ax
 	ret
 messege_output endp
-allInput proc
-		push bx
-		push dx
-		push cx
-		XOR BX,BX
-		CALL input 
-		cmp minus,1;  if - was inputed
-		JZ MinusNumber
-		continue1:
-		XCHG AX,BX
-		pop cx
-		pop dx
-		pop bx
-		ret
-allInput endp
-MinusNumber:
-			neg Bx
-jmp continue1 
-input proc
-			PUSH AX
-			PUSH CX
-			PUSH DX
-			MOV AH,01h
-			int 21h;
-			cmp al,'-'
-			JZ MinusInput
-			mov minus,0
-			sub AL,'0'
-			CMP AL,13;end of the input 
-			JZ end1
-			MOV CH,0
-			MOV CL,AL
-			CMP CX,221
-			JZ end1
-			MOV AX,BX
-			MOV BX,10
-			MUL BX
-			XOR DX,DX
-			ADD AX, CX
-			XCHG AX,BX
-			XOR AX,AX
-		begin:
-			MOV AH,01h
-			int 21h;
-			sub AL,'0'
-			CMP AL,13;end of the input 
-			JZ end1
-			MOV CH,0
-			MOV CL,AL
-			CMP CX,221
-			JZ end1
-			MOV AX,BX
-			MOV BX,10
-			MUL BX
-			XOR DX,DX
-			ADD AX, CX
-			XCHG AX,BX
-			XOR AX,AX
-			JMP begin
-		end1:
-			POP AX
-			POP CX
-			POP DX
-		ret
-input endp
-MinusInput:
-			mov minus,1			
-JMP begin
 
 output_last proc
 	push cx
@@ -188,40 +204,45 @@ main:
     mov ax, @data
     mov ds, ax
 
+	xor cx, cx
 	xor ax,ax
-	mov dx, offset rows_messege
-	call messege_output 
+	mov ah, 3dh ;file input
+    lea dx, input
+    int 21h
+	jc eng_programm
+	mov file_descriptor,ax
+
+	xor ax,ax
 	xor dx,dx
-	call allInput
+	call fileInput
 	mov rows,ax
+
 	xor ax,ax
-	mov dx, offset colunms_messege
-	call messege_output
-	xor dx,dx
-	call allInput
+	call fileInput
 	mov colunms,ax
 	xor bx,bx
 	mov bx, rows
 	mul bx
 	mov quantity, ax
+
+	xor ax,ax
+	call fileInput
+	xor bx,bx
+	mov biggest_number, ax
+
 	xor ax,ax
 	xor bx,bx
 	mov cx,quantity
 	matrix_entry:
-		mov dx, offset matrix_messege
-		call messege_output 
 		xor dx,dx
-		call allInput
+		call fileInput
 		mov array[bx], ax
 		inc bx
 		inc bx
 		xor ax,ax
 	loop matrix_entry
-	mov dx, offset number_messege
-	call messege_output 
-	call allInput
+	
 	xor bx,bx
-	mov biggest_number, ax
 	mov cx,quantity
 	matrix:
 		push ax
