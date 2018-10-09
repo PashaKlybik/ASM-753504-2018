@@ -1,10 +1,10 @@
 .model small
 .stack 256
 .data
-a dw 10
-b dw 12
-c dw 13
-d dw 0
+a dw 7
+b dw 6
+c dw 8
+d dw 9
 .code
 
 main:
@@ -24,16 +24,14 @@ mul ax
 
 ;comparing a^3 with b^2
 cmp bx, ax
-JA bigger
 JNA smaller
 
 ;if à^3 > b^2
-bigger:
 mov ax, c
-mul d
+mul d  
 mov bx, ax
 mov ax, a
-mov dx, 5
+
 div b
 cmp bx, ax
 JZ equal
