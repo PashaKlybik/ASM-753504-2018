@@ -1,7 +1,6 @@
 .model small
 .stack 256
 .data
-ten dw 10
 counter dw 0
 trysymbol db ?
 maxlen db 80
@@ -36,7 +35,6 @@ printfromax PROC
 	int 21h
 	loop cycle2
 
-	mov ax,dx
 	pop dx
 	pop cx
 	pop bx
@@ -45,8 +43,7 @@ printfromax PROC
 printfromax endp
 
 searchforvowels proc
-	push ax
-	push bx	
+	push ax	
 	push cx	
 	push dx	
 	push di
@@ -66,23 +63,18 @@ searchforvowels proc
 	pop di
 	pop dx
 	pop cx
-	pop bx
 	pop ax
 	RET
 searchforvowels endp
 	
 findstart proc
-	push ax
-	push bx	
-	push cx	
-	push dx	
-	push si
+	push ax	
+	push cx		
+	push di
 	push es
 
-	xor ax,ax
-	mov si,2
 	cld
-	mov al,string[si]
+	mov al,string[2]
 	mov trysymbol,al
 	call searchforvowels
 	
@@ -92,25 +84,18 @@ findstart proc
 	cld
 	
 	cycle3:
-	
 	mov al,32	;space
 	repnz scasb 	
 	jnz totheend
-	
-
 	mov al,es:di
 	mov trysymbol,al
-
 	call searchforvowels
-	
 	jmp cycle3
 	
 	totheend:
 	pop es
-	pop si
-	pop dx
+	pop di
 	pop cx
-	pop bx
 	pop ax
 	RET
 findstart endp
