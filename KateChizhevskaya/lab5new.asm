@@ -105,7 +105,6 @@ allOutput proc
 	ret
 	allOutput endp
 
-
 	special:
 	call specialOutput
 	jmp continue
