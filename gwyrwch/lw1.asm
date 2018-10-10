@@ -26,7 +26,7 @@ main:
 	cmp ax, bx  	; is a ^ 2 = b * c
 	JZ true_main_condition
 
-	div b 	; ax contains  c
+	mov ax, c
 	mul a 	
 	sub ax, b 	;ax = c * a - b
 	JMP finish
