@@ -2,43 +2,41 @@
 .stack 256
 .data
 ten dw 10
-divfmessage db 10,13,"Enter a dividend.	 " ,10,13, "$"
-errormessage db 10,13, "Oh no! (T___T) This number is too big!  Try again." ,10,13, "$"
-errormessagefl db 10,13, "Oh no! (T___T) There are some wrong symbols! Try again. " ,10,13, "$"
-divisfmessage db 10,13, "Enter a divisor. ",10,13, "$" 
-resmessage db 10,13, "The result is: $"
-res2message db 10,13, "The reminder is: $" 
-endmessage db 10,13, "$" 
-er2message db 10,13, "Can't divide by zero! $"
+dividend_message db 10,13,"Enter a dividend.	 " ,10,13, "$"
+too_big_message db "Oh no! (T___T) This number is too big!  Try again." ,10,13, "$"
+wrong_symbols_message db "Oh no! (T___T) There are some wrong symbols! Try again. " ,10,13, "$"
+divisor_message db 10,13, "Enter a divisor. ",10,13, "$" 
+result_message db 10,13, "The result is: $"
+reminder_message db 10,13, "The reminder is: $" 
+blank_message db 10,13, "$" 
+div_zero_message db 10,13, "Can't divide by zero! $"
 .code
 
-delete PROC ;процедура для удаления символа
+delete PROC 	;for erasing a symbol
 	push ax
 	push bx	
-	push cx	
-	push dx	 
+	push cx		 
 
 	mov bh, 0
-	mov cx, 1 ;количество пробелов
+	mov cx, 1	 ;number of spaces
 	mov al, ' ' 
-	mov ah, 0AH ;записать символ на позиции курсора
+	mov ah, 0AH 	;write character at the cursor's position
 	int 10h 
 
-	pop dx 
 	pop cx
 	pop bx
 	pop ax
 	ret 
 delete ENDP
 
-;процедура для вывода числа из AX на экран
+;for printing the number from ax
 print PROC	
 	push ax
 	push bx	
 	push cx	
 	push dx	
 		
-	mov bx,10
+	mov bx,ten
 	xor cx,cx
 
 	cycle1:
@@ -56,7 +54,6 @@ print PROC
 	int 21h
 	loop cycle2
 
-	mov ax,dx
 	pop dx
 	pop cx
 	pop bx
@@ -64,32 +61,30 @@ print PROC
 	RET
 print endp
 
-errormessageforlet PROC
-	push ax
-	push bx	
-	push cx	
+print_wrong_symbols_message PROC
+	push ax	
 	push dx	
-	mov dx,offset errormessagefl   
+	
+	mov dx,offset wrong_symbols_message
 	mov ah,09h
 	int 21h	
+	
 	pop dx
-	pop cx
-	pop bx
 	pop ax
 	RET
-errormessageforlet endp
+print_wrong_symbols_message endp
 
-enternumber PROC	;процедура для ввода числа с клавиатуры в регистр AX
-
+enter_number PROC	;procedure for entering a number from the keyboard
 	push bx	
 	push cx	
 	push dx	
 
 	xor bx,bx
 
-continuemark:
+continue_entering:
 	mov ah,01h
 	int 21h
+	xor di,di
 	cmp al,13 	;enter
 	jz next	
 	cmp  al,8	;backspace
@@ -98,32 +93,32 @@ continuemark:
 	jz escape	;escape
 	sub al,'0'
 	cmp al,9	;not numbers:
-	ja letter	;letter/symbol
+	ja wrong_symbol	;letter/symbol
 	xor cx,cx	
 	mov cl,al
 	mov ax,bx
-	xor dx,dx
 	mul ten
-	cmp dx,0	;переполнение?
+	cmp dx,0	;overflow?
 	jnz endpr
 	add ax,cx
-	jc endpr	;переполнение?
+	jc endpr	;overflow?[2]
 	mov bx,ax
-	jmp continuemark
+	jmp continue_entering
 
 escape:
 	xor bx,bx
 	mov cx,6
 	cycle3:
 	mov dl,8
-	mov ah,02h	; вывод backspace'a
+	mov ah,02h	; print backspace
 	int 21h
 	call delete
 	loop cycle3	
-	jmp continuemark
-
-next: 
-	jmp newnext
+	cmp di,1
+	jz continue_processing_wrong_symbols
+	cmp di,2
+	jz continue_processing_overflow
+	jmp continue_entering
 
 bckspace:
 	xchg bx,ax
@@ -131,81 +126,86 @@ bckspace:
 	div ten
 	xchg bx,ax
 	call delete
-	jmp continuemark
+	jmp continue_entering
 	
-letter:
-	call errormessageforlet
-	xor bx,bx
-	jmp continuemark
+wrong_symbol:
+	mov di,1
+	jmp escape
+	continue_processing_wrong_symbols:
+	call print_wrong_symbols_message
+	jmp continue_entering
 	
 endpr:
-	mov dx,offset errormessage       
+	mov di,2
+	jmp escape
+	continue_processing_overflow:
+	mov dx,offset too_big_message      
 	mov ah,09h
 	int 21h
 	xor bx,bx
-	jmp continuemark
+	jmp continue_entering
 	
-newnext:
+next:
 	mov ax,bx
 
 	pop dx
 	pop cx
 	pop bx
 	RET
-enternumber endp
+enter_number endp
 
 main:
 
 	mov ax, @data
 	mov ds, ax
 
-	;ввод и вывод делимого
-	mov dx,offset divfmessage
+	;enter and print a dividend
+	mov dx,offset dividend_message
 	mov ah,09h
 	int 21h
-	call enternumber
+	call enter_number
 	call print
 	mov bx,ax
 
-	;ввод и вывод делителя
-	mov dx,offset divisfmessage
+	;enter and print a divisor
+	mov dx,offset divisor_message
 	mov ah,09h
 	int 21h
-	call enternumber
+	call enter_number
 	call print
 	xchg bx,ax
 
 	cmp bx,0
-	jz	errormess
+	jz show_error_mess
 	
 	xchg cx,ax
-	mov dx,offset resmessage
+	mov dx,offset result_message
 	mov ah,09h
 	int 21h
 
-	;вывод целой части от деления
+	;print result
 	xchg cx,ax
 	xor dx,dx
 	div bx
 	call print
 
 	xchg cx,dx
-	mov dx,offset res2message
+	mov dx,offset reminder_message
 	mov ah,09h
 	int 21h
 
-	;вывод остатка от деления
+	;print reminder
 	xchg cx,ax
 	call print
-	jmp endprog
+	jmp exit
 	
-	errormess:
-	mov dx,offset er2message
+	show_error_mess:
+	mov dx,offset div_zero_message
 	mov ah,09h
-	int 21h
+	int 21h	
 	
-	endprog:
-	mov dx,offset endmessage
+	exit:
+	mov dx,offset blank_message
 	mov ah,09h
 	int 21h
 
