@@ -69,10 +69,13 @@ scanf PROC
 		MOV ah, 01h
 		INT 21h
 
+		CMP al, 8 ; backspace 
+		JZ backspace
+
 		CMP al, 13
 		JZ good_input
 
-		CMP al, 48 ; '0' = 48 '9' = 57 //47
+		CMP al, 48 ; '0' = 48 '9' = 57 
 		JC bad_input
 
 		CMP al, 58 ;
@@ -95,6 +98,26 @@ scanf PROC
 
 		JC bad_input
 	JMP	reading
+
+	backspace:
+		CMP __cnt_digits, 0
+		JZ reading
+
+		MOV ax, bx
+		DIV ten
+		MOV bx, ax
+
+		MOV dl, ' '
+		MOV ah, 02h
+		INT 21h
+
+		MOV dl, 8
+		MOV ah, 02h
+		INT 21h
+		
+		MOV dl, 0
+		DEC __cnt_digits
+		JMP reading
 
 	good_input:
 		CMP __cnt_digits, 0
