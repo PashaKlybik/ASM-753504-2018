@@ -114,6 +114,9 @@ scanf PROC
 
 		skip_reading:
 
+		CMP al, 8 ; backspace 
+		JZ backspace
+
 		CMP al, 13
 		JZ good_input
 
@@ -141,12 +144,47 @@ scanf PROC
 		JC bad_input
 	JMP	reading
 
+	backspace:
+		CMP __cnt_digits, 0
+		JZ erase_minus ; -\b
+
+		MOV ax, bx
+		DIV ten
+		MOV bx, ax
+
+		MOV dl, ' '
+		MOV ah, 02h
+		INT 21h
+
+		MOV dl, 8
+		MOV ah, 02h
+		INT 21h
+		
+		MOV dl, 0
+		DEC __cnt_digits
+		JMP reading
+
+	erase_minus:
+		MOV dl, ' '
+		MOV ah, 02h
+		INT 21h
+
+		MOV dl, 8
+		MOV ah, 02h
+		INT 21h
+
+		MOV dl, 0
+		JMP scanf_prep
+
 	good_input:
 		CMP __cnt_digits, 0
-		JZ scanf_prep 
+		JZ jump_scanf_prep ; too long jump 
 
 		MOV ax, bx
 		JMP validate_range
+
+	jump_scanf_prep:
+		JMP scanf_prep
 
 	bad_input:
 		LEA dx, s
@@ -193,7 +231,7 @@ main:
     CALL printf
     CALL endl
 
-    MOV dx, cx
+    MOV dx, cx ;swap ax cx
     MOV cx, ax
     MOV ax, dx
 
@@ -201,24 +239,23 @@ main:
     CMP cx, 0
     JZ div_by_zero
 
-    CMP ax, 8000h
-		JNZ save_division
-	CMP cx, 0FFFFh
-		JNZ save_division
+    CMP ax, 8000h ;-32768 
+	JNZ save_division
+	CMP cx, 0FFFFh ;-1
+	JNZ save_division
 
 	LEA dx, s
 	MOV ah, 09h
 	INT 21h
 	JMP end_main
+
 	save_division:
+	    CWD
+	    IDIV cx
 
-
-    CWD
-    IDIV cx
-
-    CALL printf
-    CALL endl
-    JMP end_main 
+	    CALL printf
+	    CALL endl
+	    JMP end_main 
 
     div_by_zero:
     	LEA dx, zero
