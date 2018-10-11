@@ -14,6 +14,7 @@ dataseg
     string db 201 dup(?) ;200 + 1 для $
 codeseg
 
+
 ;reads line and writes it to string data + adds '$'
 ;saves ax, si
 ReadLine proc
@@ -77,6 +78,7 @@ EditLine proc
     push cx
     push dx
     push bx
+    xor si, si
     ;here we count amount of symbols in the word or finish program
     CountinueScan:
         xor cx, cx
