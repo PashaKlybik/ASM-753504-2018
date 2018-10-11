@@ -36,13 +36,13 @@ main:
         mov bx,10
 
     count:
-		xor dx,dx
-		div bx
-		add dl,'0'
-		push dx
-		inc cx
-		test ax,ax
-		jnz count
+        xor dx,dx
+        div bx
+        add dl,'0'
+        push dx
+        inc cx
+        test ax,ax
+        jnz count
 	
     fromStackLast:
         pop dx
@@ -86,14 +86,14 @@ main:
             XCHG AX,BX
             XOR AX,AX
             JMP begin
-		end1:
+        end1:
             POP AX
             POP CX
             POP DX
-		ret
+        ret
             input endp
 
-		error: 
+        error: 
             mov ah, 9
             mov dx, offset error1
             int 21h
