@@ -218,28 +218,28 @@ scanf PROC
 scanf ENDP
 	
 main:
-    MOV ax, @data
-    MOV ds, ax
+	MOV ax, @data
+	MOV ds, ax
 
-    CALL scanf
-    CALL printf
-    CALL endl
+	CALL scanf
+	CALL printf
+	CALL endl
 
-    MOV cx, ax
+	MOV cx, ax
 
-    CALL scanf
-    CALL printf
-    CALL endl
+	CALL scanf
+	CALL printf
+	CALL endl
 
-    MOV dx, cx ;swap ax cx
-    MOV cx, ax
-    MOV ax, dx
+	MOV dx, cx ;swap ax cx
+	MOV cx, ax
+	MOV ax, dx
 
-    MOV dx, 0  
-    CMP cx, 0
-    JZ div_by_zero
+	MOV dx, 0  
+	CMP cx, 0
+	JZ div_by_zero
 
-    CMP ax, 8000h ;-32768 
+	CMP ax, 8000h ;-32768 
 	JNZ save_division
 	CMP cx, 0FFFFh ;-1
 	JNZ save_division
@@ -250,15 +250,15 @@ main:
 	JMP end_main
 
 	save_division:
-	    CWD
-	    IDIV cx
+		CWD
+		IDIV cx
 
-	    CALL printf
-	    CALL endl
-	    JMP end_main 
+		CALL printf
+		CALL endl
+	JMP end_main 
 
-    div_by_zero:
-    	LEA dx, zero
+	div_by_zero:
+		LEA dx, zero
 		MOV ah, 09h
 		INT 21h
 
