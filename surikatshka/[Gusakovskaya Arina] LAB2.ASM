@@ -11,7 +11,6 @@
 	helpLineReminder  db 'The reminder = ','$'
 	helpLineZDivision db 'Cannot be divided by 0.','$'
 
-    count			  dw 0  ;counter 
 	ten				  dw 10 ;constant value 
    
 .code
@@ -32,31 +31,31 @@ integerInput PROC ;enter of integer
 	XOR Bx,Bx
 	XOR Cx,Cx
 
-@@cycle1:
+@@InputCycle:
 	MOV Ah, 07h ;function with reads character without echo
 	INT 21h
 	CMP Al, 0Dh ;code of enter
 	JZ @@exit
 	CMP AL,30h
-	JC @@cycle1
+	JC @@InputCycle
 	CMP Al,3ah
-	JNC @@cycle1
+	JNC @@InputCycle
 	CMP Bx,6554		;control of number which will be certainly overflowing after multiplication by 10
-	JGE @@cycle1	;great or equal
+	JGE @@InputCycle	;great or equal
 	SUB Al, 30h 	;susbsctraction of zero code
 	MOV Cl, Al
 	MOV Ax,Bx
 	MUL ten
 	CMP Dx,0
-	JNZ @@cycle1
+	JNZ @@InputCycle
 	ADD Ax,Cx
-	JC @@cycle1 	;after addition overflow flag(JC) check 
+	JC @@InputCycle 	;after addition overflow flag(JC) check 
 	MOV Bx, Ax
 	MOV Dl,Cl
 	ADD Dl,30h
 	MOV Ah,02h
 	INT 21h
-	JMP @@cycle1
+	JMP @@InputCycle
 
 @@exit:
 	MOV Ax,Bx
@@ -77,17 +76,14 @@ integerOutput PROC ;output of integer numbers
 	PUSH Dx
 	INC Cx
 	CMP ax,0
-	JZ stackOutput
-	JMP @@cycleDiv
-
-stackOutput:
+	JNZ @@cycleDiv
 	
-@@cycle2:
+@@OutputCycle:
 	POP Dx
 	ADD Dx,'0'
 	MOV Ah,02h
 	INT 21h
-	LOOP @@cycle2
+	LOOP @@OutputCycle
 
 	POP Cx
 	POP Dx
