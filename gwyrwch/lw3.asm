@@ -76,7 +76,7 @@ printf PROC
 	NEG ax
 
 	plus:
-		CALL uprintf
+	CALL uprintf
 
 	POP ax
 	POP dx
