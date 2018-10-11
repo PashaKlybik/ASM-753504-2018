@@ -108,7 +108,7 @@ EditLine proc
             ;if not we delete it
             jne DeleteWord
             cmp si, cx
-            jae FrenchFin
+            ja FrenchFin
             dec cx
         jmp BackWards
         FrenchFin:
