@@ -77,8 +77,8 @@ change proc
     cld
     cycle1:
         lodsb
-		stosb
-		xor al,al
+        stosb
+        xor al,al
     loop cycle1
     pop si
     pop dx
