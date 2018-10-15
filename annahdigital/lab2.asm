@@ -12,7 +12,7 @@ blankMessage db 10,13, "$"
 divByZeroMessage db 10,13, "Can't divide by zero! $"
 .code
 
-delete PROC     ;for erasing a symbol
+delete PROC     ; for erasing a symbol
     push ax
     push bx    
     push cx         
