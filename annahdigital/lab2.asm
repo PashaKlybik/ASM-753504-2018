@@ -2,14 +2,14 @@
 .stack 256
 .data
 ten dw 10
-dividend_message db 10,13,"Enter a dividend.	 " ,10,13, "$"
-too_big_message db "Oh no! (T___T) This number is too big!  Try again." ,10,13, "$"
-wrong_symbols_message db "Oh no! (T___T) There are some wrong symbols! Try again. " ,10,13, "$"
-divisor_message db 10,13, "Enter a divisor. ",10,13, "$" 
-result_message db 10,13, "The result is: $"
-reminder_message db 10,13, "The reminder is: $" 
-blank_message db 10,13, "$" 
-div_zero_message db 10,13, "Can't divide by zero! $"
+dividendMessage db 10,13,"Enter a dividend.	 " ,10,13, "$"
+tooBigMessage db "Oh no! (T___T) This number is too big!  Try again." ,10,13, "$"
+wrongSymbolsMessage db "Oh no! (T___T) There are some wrong symbols! Try again. " ,10,13, "$"
+divisorMessage db 10,13, "Enter a divisor. ",10,13, "$" 
+resultMessage db 10,13, "The result is: $"
+reminderMessage db 10,13, "The reminder is: $" 
+blankMessage db 10,13, "$" 
+divByZeroMessage db 10,13, "Can't divide by zero! $"
 .code
 
 delete PROC 	;for erasing a symbol
@@ -61,27 +61,27 @@ print PROC
 	RET
 print endp
 
-print_wrong_symbols_message PROC
+printWrongSymbolsMessage PROC
 	push ax	
 	push dx	
 	
-	mov dx,offset wrong_symbols_message
+	mov dx,offset wrongSymbolsMessage
 	mov ah,09h
 	int 21h	
 	
 	pop dx
 	pop ax
 	RET
-print_wrong_symbols_message endp
+printWrongSymbolsMessage endp
 
-enter_number PROC	;procedure for entering a number from the keyboard
+enterNumber PROC	;procedure for entering a number from the keyboard
 	push bx	
 	push cx	
 	push dx	
 
 	xor bx,bx
 
-continue_entering:
+continueEntering:
 	mov ah,01h
 	int 21h
 	xor di,di
@@ -93,7 +93,7 @@ continue_entering:
 	jz escape	;escape
 	sub al,'0'
 	cmp al,9	;not numbers:
-	ja wrong_symbol	;letter/symbol
+	ja wrongSymbol	;letter/symbol
 	xor cx,cx	
 	mov cl,al
 	mov ax,bx
@@ -103,7 +103,7 @@ continue_entering:
 	add ax,cx
 	jc endpr	;overflow?[2]
 	mov bx,ax
-	jmp continue_entering
+	jmp continueEntering
 
 escape:
 	xor bx,bx
@@ -115,10 +115,10 @@ escape:
 	call delete
 	loop cycle3	
 	cmp di,1
-	jz continue_processing_wrong_symbols
+	jz continueProcessingWrongSymbols
 	cmp di,2
-	jz continue_processing_overflow
-	jmp continue_entering
+	jz continueProcessingOverflow
+	jmp continueEntering
 
 bckspace:
 	xchg bx,ax
@@ -126,24 +126,24 @@ bckspace:
 	div ten
 	xchg bx,ax
 	call delete
-	jmp continue_entering
+	jmp continueEntering
 	
-wrong_symbol:
+wrongSymbol:
 	mov di,1
 	jmp escape
-	continue_processing_wrong_symbols:
-	call print_wrong_symbols_message
-	jmp continue_entering
+	continueProcessingWrongSymbols:
+	call printWrongSymbolsMessage
+	jmp continueEntering
 	
 endpr:
 	mov di,2
 	jmp escape
-	continue_processing_overflow:
-	mov dx,offset too_big_message      
+	continueProcessingOverflow:
+	mov dx,offset tooBigMessage      
 	mov ah,09h
 	int 21h
 	xor bx,bx
-	jmp continue_entering
+	jmp continueEntering
 	
 next:
 	mov ax,bx
@@ -152,7 +152,7 @@ next:
 	pop cx
 	pop bx
 	RET
-enter_number endp
+enterNumber endp
 
 main:
 
@@ -160,26 +160,26 @@ main:
 	mov ds, ax
 
 	;enter and print a dividend
-	mov dx,offset dividend_message
+	mov dx,offset dividendMessage
 	mov ah,09h
 	int 21h
-	call enter_number
+	call enterNumber
 	call print
 	mov bx,ax
 
 	;enter and print a divisor
-	mov dx,offset divisor_message
+	mov dx,offset divisorMessage
 	mov ah,09h
 	int 21h
-	call enter_number
+	call enterNumber
 	call print
 	xchg bx,ax
 
 	cmp bx,0
-	jz show_error_mess
+	jz showErrorMessage
 	
 	xchg cx,ax
-	mov dx,offset result_message
+	mov dx,offset resultMessage
 	mov ah,09h
 	int 21h
 
@@ -190,7 +190,7 @@ main:
 	call print
 
 	xchg cx,dx
-	mov dx,offset reminder_message
+	mov dx,offset reminderMessage
 	mov ah,09h
 	int 21h
 
@@ -199,13 +199,13 @@ main:
 	call print
 	jmp exit
 	
-	show_error_mess:
-	mov dx,offset div_zero_message
+	showErrorMessage:
+	mov dx,offset divByZeroMessage
 	mov ah,09h
 	int 21h	
 	
 	exit:
-	mov dx,offset blank_message
+	mov dx,offset blankMessage
 	mov ah,09h
 	int 21h
 
