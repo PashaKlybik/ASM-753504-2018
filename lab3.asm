@@ -9,9 +9,8 @@
     dividend db "dividend: $"
     divider db 10,"divider: $"
     result db 10,"result: $"
-
+    separator db "------------------------", 10, '$'
 .386
-
 .code
 new_row proc
     push dx
@@ -93,7 +92,7 @@ str_to_signed_word proc
     dec al          
 unsigned:
     call str_to_unsigned_word
-    jc stsdw_exit   
+    jc stsw_exit   
     cmp bl,'-'      
     jne positive_op  
     cmp ax,32768    
@@ -105,8 +104,8 @@ positive_op:
     ja overflow_error  
 negative_op:
     clc             
-    jmp stsdw_exit              
-stsdw_exit:
+    jmp stsw_exit              
+stsw_exit:
     pop dx          
     pop bx
     ret
@@ -174,7 +173,7 @@ dividing proc
     ret
 dividing endp
 
-main:       
+main:   
     mov ax, @data
     mov ds, ax
     
@@ -223,10 +222,15 @@ empty_operand_error:
 
 show_error:
     mov ah, 09h
-    int 21h  
-
-main_exit:
+    int 21h 
     
+    lea dx, separator 
+    mov ah, 09h
+    int 21h
+    
+    jmp main
+    
+main_exit:    
     mov ax, 4c00h
     int 21h
 end main
