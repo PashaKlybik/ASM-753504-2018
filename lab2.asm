@@ -9,6 +9,7 @@
     dividend db "dividend: $"
     divider db 10,"divider: $"
     result db 10,"result: $"
+    separator db "------------------------", 10, '$'
 .code
         
 print_word proc    
@@ -85,16 +86,10 @@ str_handler proc
     ret
 str_handler endp
 
-main:
-    push ax
-    push bx
-    push cx
-    push dx
-    push si
-    
+main:   
     mov ax, @data
     mov ds, ax
-    
+        
     lea dx, dividend
     mov ah, 09h
     int 21h
@@ -126,7 +121,7 @@ main:
     div bx
     call print_word
     call new_row
-    jmp exit_l
+    jmp exit
     
     div_by_zero_error:
     lea dx, dbz_str
@@ -141,16 +136,13 @@ main:
     
     show_error:
     mov ah, 09h
-    int 21h       
+    int 21h 
+    lea dx, separator
+    mov ah, 09h
+    int 21h 
+    jmp main    
     
-    exit_l:    
-    
-    pop si
-    pop dx
-    pop cx
-    pop bx
-    pop ax        
-    
+    exit:          
     mov ax, 4c00h
     int 21h
 end main
