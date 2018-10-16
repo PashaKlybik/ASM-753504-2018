@@ -3,8 +3,8 @@
 .data
 message1 db 'Eneter divinded:', 10, 13, '$'
 message2 db 'Enter divider: ', 10, 13, '$'
-error_message db 'Invalid input! ', 10, 13, '$'
-division_by_zero db 'Error! Division by zero.', 10,13, '$'
+errorMessage db 'Invalid input! ', 10, 13, '$'
+divisionByZero db 'Error! Division by zero.', 10,13, '$'
 maxlen db 21
 len db 0
 buffer db 20 dup(0)
@@ -124,7 +124,7 @@ main:
     jc error
     call print
     test ax, ax
-    jz div_error
+    jz divisionError
 
     mov bx, ax
     xor dx, dx
@@ -133,15 +133,15 @@ main:
     call print
     jmp finish
 
-div_error:
+divisionError:
 	mov ah, 09h
-	mov dx, offset division_by_zero
+	mov dx, offset divisionByZero
 	int 21h
 	jmp finish
 
 error:
 	mov ah, 09h
-	mov dx, offset error_message
+	mov dx, offset errorMessage
 	int 21h
 
 finish:
