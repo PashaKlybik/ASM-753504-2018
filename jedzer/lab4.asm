@@ -113,6 +113,7 @@ EditLine proc
         jmp BackWards
         FrenchFin:
         inc si
+        inc si
         jmp CountinueScan
     ;god damn it
     ;...some shit {wordToDelete} some other shit...
