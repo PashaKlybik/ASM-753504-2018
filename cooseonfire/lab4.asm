@@ -9,7 +9,7 @@ string db 253 dup(?)
 
 .code
 
-proc vowelStatWordAmount
+proc vowelStartWordAmount
     push ax
     push cx
     push dx 
@@ -34,7 +34,7 @@ skipWhitespaces:
     inc cx
 
 checkVowel:
-    jcxz endOfTheWord
+    jcxz endOfTheText
     mov al, [di]
     cmp al, 'A'  
     jz vowel
@@ -63,9 +63,9 @@ vowel:
 skipTheRestLetters:
     mov al, ' '
     repne scasb
-    jcxz endOfTheWord
+    jcxz endOfTheText
     jz skipWhitespaces
-    jmp endOfTheWord
+    jmp endOfTheText
 
 emptyString:
     mov bx, 0
@@ -75,7 +75,7 @@ emptyString:
     pop ax
     ret
 
-endOfTheWord:
+endOfTheText:
     pop di
     pop dx
     pop cx
@@ -105,7 +105,7 @@ main:
     lea dx, message1
     int 21h
 
-    call vowelStatWordAmount
+    call vowelStartWordAmount
     push dx
     call newLine
     xor dx, dx
