@@ -3,46 +3,10 @@
 .data
     firstInput dw ?
     secondInput dw ?
-    minusNumberc dw 0
+    minusNumberCount dw 0
     minus db ?
     error1  db 'Error!', 13, 10, '$'
 .code
-main:
-    mov ax, @data
-    mov ds, ax
-
-    call allInput
-    call allOutput
-    mov firstInput,ax
-    xor ax,ax
-    call allInput
-    call allOutput
-    mov secondInput,ax
-    cmp secondInput, 0
-    jz error2
-    xor ax,ax
-    mov ax,firstInput
-    div secondInput
-    cmp minusNumberc,1
-    jz special1
-    pr1:
-    call allOutput
-    jmp endprogramm
-
-    error2: 
-        push ax
-        push dx
-        mov ah, 9
-        mov dx, offset error1
-        int 21h
-        pop dx
-        pop ax
-        jmp endprogramm
-
-    special1:
-        neg ax
-        jmp pr1
-
     allInput proc
         XOR BX,BX
         CALL input 
@@ -179,18 +143,50 @@ main:
         POP AX
         POP CX
         POP DX
-    JMP endprogramm
+    JMP endProgramm
 		
     MinusInput:
         push cx
-        mov cx, minusNumberc
+        mov cx, minusNumberCount
         add cx,1
-        mov  minusNumberc,cx
+        mov  minusNumberCount,cx
         pop cx
         mov minus,1			
         JMP begin
-			
-    endprogramm:
+main:
+    mov ax, @data
+    mov ds, ax
+    call allInput
+    call allOutput
+    mov firstInput,ax
+    xor ax,ax
+    call allInput
+    call allOutput
+    mov secondInput,ax
+    cmp secondInput, 0
+    jz error2
+    xor ax,ax
+    mov ax,firstInput
+    div secondInput
+    cmp minusNumberCount,1
+    jz revers
+    continueWork:
+    call allOutput
+	jmp endProgramm
+    error2: 
+        push ax
+        push dx
+        mov ah, 9
+        mov dx, offset error1
+        int 21h
+        pop dx
+        pop ax
+        jmp endProgramm
+    revers:
+        neg ax
+        jmp continueWork
+
+    endProgramm:
     mov ax, 4c00h
     int 21h   
 end main	
