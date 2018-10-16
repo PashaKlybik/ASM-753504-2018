@@ -229,19 +229,19 @@ main:
     cmp bx,0
     jz showErrorMess
     
-	mov cx,ax
-	neg cx
-	cmp cx,32768
-	jnz continuePrinting
-	test bx, 1000000000000000b
-	jz continuePrinting
-	mov cx, bx
-	neg cx
-	cmp cx,1
-	jnz continuePrinting
-	jmp overflowError
-	
-	continuePrinting:
+    mov cx,ax
+    neg cx
+    cmp cx,32768
+    jnz continuePrinting
+    test bx, 1000000000000000b
+    jz continuePrinting
+    mov cx, bx
+    neg cx
+    cmp cx,1
+    jnz continuePrinting
+    jmp overflowError
+    
+    continuePrinting:
     xchg cx,ax
     mov dx,offset resultMessage
     mov ah,09h
@@ -272,13 +272,13 @@ main:
     mov dx,offset divByZeroMessage
     mov ah,09h
     int 21h
-	jmp exit
-	
-	overflowError:
-	mov dx,offset blankMessage
+    jmp exit
+    
+    overflowError:
+    mov dx,offset blankMessage
     mov ah,09h
     int 21h
-	mov dx,offset tooBigMessage
+    mov dx,offset tooBigMessage
     mov ah,09h
     int 21h
     
