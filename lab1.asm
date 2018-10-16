@@ -10,7 +10,7 @@ start:
 
     mov al,x1
         cmp     al,x2
-        jg      skip1; jg - строго больше
+        jg      skip1
         mov     al,x2
 skip1:
         cmp     al,x3
