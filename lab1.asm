@@ -14,11 +14,11 @@ start:
         mov     al,x2
 skip1:
         cmp     al,x3
-        jg      skip2;
+        jg      skip2
         mov     al,x3
 skip2:
         cmp     al,x4
-        jg      skip3;
+        jg      skip3
         mov     al,x4 
 skip3:
         mov ax,4c00h
