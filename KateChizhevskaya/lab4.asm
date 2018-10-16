@@ -1,22 +1,22 @@
 .model small; вариант 4, найти и показать самое длинное слово
 .stack 256
 .data
-    length_max  db 100
-    length_real db ?
-    first_position dw ?
-    last_position dw ?
+    lengthMax  db 100
+    lengthReal db ?
+    firstPosition dw ?
+    lastPosition dw ?
     result db ?
     char db ?
-    word_max db 100 dup('$'),'$'
-    word_max_length dw 0
+    wordMax db 100 dup('$'),'$'
+    wordMaxLength dw 0
     string db 100 dup ('$')
-    new_line db 13, 10, '$'
+    newLine db 13, 10, '$'
 .code
 
 output proc
     push ax
     push dx
-    mov dx,offset word_max
+    mov dx,offset wordMax
     mov ah,9
     int 21h
     pop dx
@@ -28,12 +28,12 @@ input proc
     push ax
     push dx
     push bx
-    lea bx,length_max
+    lea bx,lengthMax
     mov ah,0ah
     lea dx,string
     int 21h
     mov ah, 9
-    mov dx, offset new_line
+    mov dx, offset newLine
     int 21h 
     pop bx
     pop dx
@@ -46,14 +46,14 @@ check proc
     push bx
     push ax
     dec di
-    mov last_position, di
-    mov ax,last_position
-    mov bx, first_position
+    mov lastPosition, di
+    mov ax,lastPosition
+    mov bx, firstPosition
     sub ax,bx
-    cmp ax, word_max_length
-    JLE end_check
+    cmp ax, wordMaxLength
+    JLE endCheck
     call change
-    end_check:
+    endCheck:
     pop ax
     pop bx
     pop di
@@ -66,14 +66,14 @@ change proc
     push ax
     push dx
     push si
-    mov cx,last_position
-    sub cx,first_position
-    mov word_max_length,cx
+    mov cx,lastPosition
+    sub cx,firstPosition
+    mov wordMaxLength,cx
     mov si,di
     sub si, cx
     inc cx
     cld
-    lea di, word_max
+    lea di, wordMax
     cld
     cycle1:
         lodsb
@@ -98,28 +98,28 @@ main:
     lea di, string
     inc di
     mov al, [di]
-    mov length_real,al
+    mov lengthReal,al
     inc di
     xor cx,cx
-    mov cl, length_real
+    mov cl, lengthReal
     mov al,' '
     cld
-    begin_analysis:
-		mov first_position, di
+    beginAnalysis:
+		mov firstPosition, di
 		repne scasb
 		jmp found
     return:
 		cmp cx,0
-		JZ to_output
-    jmp begin_analysis
-    to_output:
-    call output
-    jmp end_programm
+		JZ toOutput
+    jmp beginAnalysis
+    toOutput:
+        call output
+    jmp endProgramm
 
 found:
     call check
     jmp return
-end_programm:
+endProgramm:
     mov ax, 4c00h
     int 21h   
 end main	
