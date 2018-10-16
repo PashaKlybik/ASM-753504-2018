@@ -1,38 +1,38 @@
 .model small
 .stack 256
 .data
-    intermediate_number dw ?
+    intermediateNumber dw ?
     input db "input1.txt", 0
     output db "output.txt", 0
     char db ?
     rows dw ?
     colunms dw ?
-    biggest_number dw ?
+    biggestNumber dw ?
     quantity dw ?
     minus db ?
     array dw 100 dup($)
-    new_line db 13, 10, '$'
-    tab_entry db 09, '$'
-    file_descriptor dw ?
+    newLine db 13, 10, '$'
+    tabEntry db 09, '$'
+    fileDescriptor dw ?
 .code
 
-messege_output proc
+messegeOutput proc
     push ax
     mov ah, 9
     int 21h
     pop ax
     ret
-messege_output endp
+messegeOutput endp
 
 fileInput proc
     push bx
     push dx
     push cx
-    mov bx,file_descriptor
+    mov bx,fileDescriptor
     xor ax,ax
-    jmp input_f
+    jmp inputF
     continue147:
-    mov ax,intermediate_number
+    mov ax,intermediateNumber
     cmp minus,1;  if - was inputed
     JZ MinusNumber1
     continue11:		
@@ -46,7 +46,7 @@ MinusNumber1:
     neg ax
 jmp continue11 
 
-input_f:
+inputF:
     PUSH AX
     PUSH CX
     PUSH DX
@@ -61,10 +61,10 @@ input_f:
     JZ MinusInput1
     mov minus,0
     sub AL,'0'
-    mov intermediate_number,ax
+    mov intermediateNumber,ax
     xor ax,ax
 begin1:
-    mov bx,file_descriptor
+    mov bx,fileDescriptor
     xor ax,ax
     mov ah, 3fh
     lea dx, char
@@ -81,12 +81,12 @@ begin1:
     MOV CL,AL
     CMP CX,20
     JZ end11
-    MOV AX,intermediate_number
+    MOV AX,intermediateNumber
     MOV BX,10
     MUL BX
     XOR DX,DX
     ADD AX, CX
-    mov intermediate_number,ax
+    mov intermediateNumber,ax
     JMP begin1
 
 end11:
@@ -97,7 +97,7 @@ jmp continue147
 
 MinusInput1:
     mov minus,1		
-    mov intermediate_number, 0
+    mov intermediateNumber, 0
 JMP begin1
 
 allOutput proc
@@ -156,17 +156,17 @@ loop fromStackLast
 ret
 outputt endp
 
-output_last proc
+outputLast proc
 	push cx
 	push ax
 	push dx
 	push si
 	mov cx,rows
 	mov si,0
-	rows_cycle:
+	rowsCycle:
 	    push cx
 	    mov cx,colunms
-	    columns_cycle:
+	    columnsCycle:
 	        push bx
 	        mov ax, colunms
 	        sub ax,cx 
@@ -174,24 +174,24 @@ output_last proc
 	        inc si
 	        inc si
 	        call allOutput
-	        mov dx, offset tab_entry
-	        call messege_output
+	        mov dx, offset tabEntry
+	        call messegeOutput
 	        xor ax,ax
 	        xor dx,dx
 	        pop bx
-	        loop columns_cycle
+	        loop columnsCycle
 	    pop cx
-	    mov dx, offset new_line
-	    call messege_output
+	    mov dx, offset newLine
+	    call messegeOutput
 	    xor ax,ax
 	    xor dx,dx
-	    loop rows_cycle
+	    loop rowsCycle
 	    pop si
 	    pop dx
 	    pop ax
 	    pop cx
 ret
-output_last endp
+outputLast endp
 
 main:
     mov ax, @data
@@ -202,8 +202,8 @@ main:
     mov ah, 3dh ;file input
     lea dx, input
     int 21h
-    jc eng_programm
-    mov file_descriptor,ax
+    jc engProgramm
+    mov fileDescriptor,ax
 
     xor ax,ax
     xor dx,dx
@@ -221,40 +221,40 @@ main:
 	xor ax,ax
 	call fileInput
 	xor bx,bx
-	mov biggest_number, ax
+	mov biggestNumber, ax
 
 	xor ax,ax
 	xor bx,bx
 	mov cx,quantity
-	matrix_entry:
+	matrixEntry:
 	    xor dx,dx
 	    call fileInput
 	    mov array[bx], ax
 	    inc bx
 	    inc bx
 	    xor ax,ax
-	loop matrix_entry
+	loop matrixEntry
 	
 	xor bx,bx
 	mov cx,quantity
 	matrix:
 	    push ax
 	    mov ax,array[bx]
-	    cmp ax,biggest_number
+	    cmp ax,biggestNumber
 	    JGE actions
 	    continue47:
 	    inc bx
 	    inc bx
 	    pop ax
 	loop matrix
-	call output_last
-jmp eng_programm
+	call outputLast
+jmp engProgramm
 
 actions:
 	mov array[bx],0
 	jmp continue47
 
-eng_programm:
+engProgramm:
 	mov ax, 4c00h
 	int 21h
 end main
