@@ -5,29 +5,7 @@
 	secondInput dw ?
 	error1  db 'Error!', 13, 10, '$'
 .code
-main:
-    mov ax, @data
-    mov ds, ax    
-    XOR BX,BX; first input
-    CALL input 
-    XCHG AX,BX
-    mov firstInput, AX
-    call output
-    XOR BX,BX; second input
-    CALL input 
-    XCHG AX,BX	
-    mov secondInput, AX
-    call output
-    cmp secondInput,0
-    jz error
-    XOR AX,AX
-    XOR dx,dx
-    mov Ax, firstInput
-    div secondInput
-    call output
-    JMP endprogramm
-
-    output proc
+  output proc
         push ax
         push cx
         push dx
@@ -100,9 +78,30 @@ main:
             POP AX
             POP CX
             POP DX
-            JMP endprogramm
+            JMP endProgramm
+main:
+    mov ax, @data
+    mov ds, ax    
+    XOR BX,BX; first input
+    CALL input 
+    XCHG AX,BX
+    mov firstInput, AX
+    call output
+    XOR BX,BX; second input
+    CALL input 
+    XCHG AX,BX	
+    mov secondInput, AX
+    call output
+    cmp secondInput,0
+    jz error
+    XOR AX,AX
+    XOR dx,dx
+    mov Ax, firstInput
+    div secondInput
+    call output
+    JMP endProgramm
 
- 	endprogramm:
+ 	endProgramm:
 	mov ax, 4c00h
     int 21h   
 end main	
