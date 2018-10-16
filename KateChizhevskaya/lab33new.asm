@@ -83,7 +83,7 @@
         PUSH DX
         MOV AH,01h
         int 21h;
-		xor ah,ah
+        xor ah,ah
         cmp al,'-'
         JZ MinusInput
         mov minus,0
@@ -109,7 +109,7 @@
     begin:
         MOV AH,01h
         int 21h;
-		xor ah,ah
+        xor ah,ah
         CMP AL,13;end of the input 
         JZ end1
         sub AL,'0'
@@ -172,7 +172,7 @@ main:
     jz revers
     continueWork:
     call allOutput
-	jmp endProgramm
+    jmp endProgramm
     error2: 
         push ax
         push dx
