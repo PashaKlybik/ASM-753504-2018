@@ -2,17 +2,17 @@
 .stack 256
 .data
     buffer db 255 DUP (0)
-    wrser_str db 10,"wrong symbol error", 10, '$' 
-    ovf_str db 10,"overflow", 10, '$'
-    dbz_str db 10,"dividing by zero error", 10, '$'
-    emptop_str db 10,"empty operand error" , 10, '$' 
+    wrongSymbolMessage db 10,"wrong symbol error", 10, '$' 
+    overflowMessage db 10,"overflow", 10, '$'
+    dividingByZeroMessage db 10,"dividing by zero error", 10, '$'
+    emptyOperandMessage db 10,"empty operand error" , 10, '$' 
     dividend db "dividend: $"
-    divider db 10,"divider: $"
-    result db 10,"result: $"
+    divider db "divider: $"
+    result db "result: $"
     separator db "------------------------", 10, '$'
 .386
 .code
-new_row proc
+newRow proc
     push dx
     push ax
     mov dl, 10
@@ -21,21 +21,22 @@ new_row proc
     pop ax
     pop dx
     ret
-new_row endp
+newRow endp
 
-input_signed_word proc
+inputSignedWord proc
     push dx               
-    call input_str  
-    call str_to_signed_word
+    call inputString  
+    call stringToSignedWord
     pop dx                  
     ret 
-input_signed_word endp
+inputSignedWord endp
  
 ; OUT: DX - addr str 
 ; AL - length str
-input_str proc
+inputString proc
     push cx         
-    mov cx,ax       
+    mov cx,ax   
+    mov al, 6
     mov ah,0Ah      
     mov [buffer],al 
     mov byte[buffer+1],0   
@@ -46,44 +47,40 @@ input_str proc
     mov ah,ch          
     pop cx             
     ret
-input_str endp
+inputString endp
     
-str_to_unsigned_word proc
+stringToUnsignedWord proc
     push bx
-
     mov si,dx          
     mov di,10          
     xor cx,cx
     mov cl,al          
-       
     xor ax,ax          
     xor bx,bx       
     
-    handler_loop:
+    handlerLoop:
     mov bl,[si]     
     inc si          
     cmp bl,'0'      
-    jl wrong_symbol_error  
+    jl wrongSymbolError  
     cmp bl,'9'      
-    jg wrong_symbol_error  
+    jg wrongSymbolError  
     sub bl,'0'      
     mul di          
-    jc overflow_error  
+    jc overflowError  
     add ax,bx       
-    jc overflow_error  
-    loop handler_loop   
+    jc overflowError  
+    loop handlerLoop       
     
-    pop bx 
-     
+    pop bx      
     ret   
-str_to_unsigned_word endp
+stringToUnsignedWord endp
 
-str_to_signed_word proc
+stringToSignedWord proc
     push bx         
     push dx
-
     test al,al      
-    jz empty_operand_error  
+    jz emptyOperandError  
     mov bx,dx       
     mov bl,[bx]     
     cmp bl,'-'      
@@ -91,27 +88,24 @@ str_to_signed_word proc
     inc dx          
     dec al          
 unsigned:
-    call str_to_unsigned_word
-    jc stsw_exit   
+    call stringToUnsignedWord 
     cmp bl,'-'      
-    jne positive_op  
+    jne positiveOperand  
     cmp ax,32768    
-    ja overflow_error  
+    ja overflowError  
     neg ax  
-    jmp negative_op    
-positive_op:
+    jmp negativeOperand    
+positiveOperand:
     cmp ax,32767    
-    ja overflow_error  
-negative_op:
-    clc             
-    jmp stsw_exit              
-stsw_exit:
+    ja overflowError  
+negativeOperand:
+    clc          
     pop dx          
     pop bx
     ret
-str_to_signed_word endp
+stringToSignedWord endp
 
-print_word proc  
+printWord proc  
     push bx
     push cx
     push dx
@@ -119,32 +113,34 @@ print_word proc
     mov bx, 10
     xor cx,cx
     
-    reader_loop:
+    readerLoop:
     xor dx,dx
     div bx
     push dx
     inc cx
     cmp ax,0
-    jnz reader_loop
+    jnz readerLoop
         
-    print_loop:
+    printLoop:
     pop dx
     add dl, 30h
     mov ah, 02h
     int 21h
-    loop print_loop
+    loop printLoop
 
     pop dx
     pop cx
     pop bx
     
     ret
-print_word endp
+printWord endp
 
 dividing proc
     push cx
     push dx
     
+    cmp ax,0
+    je positive
     mov cx, bx
     xor cx, ax
     cmp cx, 32768
@@ -157,13 +153,13 @@ dividing proc
     
     positive:
     cmp ax, 32768
-    jc direct_code_1
+    jc signedMagnitude_1
     neg ax
-    direct_code_1:
+    signedMagnitude_1:
     cmp bx, 32768
-    jc direct_code_2
+    jc signedMagnitude_2
     neg bx
-    direct_code_2:
+    signedMagnitude_2:
     xor dx,dx
     div bx
     
@@ -180,17 +176,19 @@ main:
     lea dx, dividend
     mov ah, 09h
     int 21h    
-    call input_signed_word
-    call new_row
+    
+    call inputSignedWord
+    call newRow
     push ax
     
     lea dx, divider
     mov ah, 09h
     int 21h
-    call input_signed_word
+
+    call inputSignedWord
     cmp ax, 0
-    jz div_by_zero_error
-    call new_row
+    jz dividingByZeroError
+    call newRow
     mov bx, ax
     pop ax
     
@@ -201,26 +199,26 @@ main:
     pop ax
     call dividing
     
-    call print_word
+    call printWord  
+    call newRow    
+    jmp mainExit
     
-    jmp main_exit
+dividingByZeroError:
+    lea dx, dividingByZeroMessage
+    jmp showError
     
-div_by_zero_error:
-    lea dx, dbz_str
-    jmp show_error
+wrongSymbolError:
+    lea dx, wrongSymbolMessage
+    jmp showError
     
-wrong_symbol_error:
-    lea dx, wrser_str
-    jmp show_error
-    
-overflow_error:
-    lea dx, ovf_str
-    jmp show_error
+overflowError:
+    lea dx, overflowMessage
+    jmp showError
 
-empty_operand_error: 
-    lea dx, emptop_str    
+emptyOperandError: 
+    lea dx, emptyOperandMessage    
 
-show_error:
+showError:
     mov ah, 09h
     int 21h 
     
@@ -230,7 +228,7 @@ show_error:
     
     jmp main
     
-main_exit:    
+mainExit:    
     mov ax, 4c00h
     int 21h
 end main
