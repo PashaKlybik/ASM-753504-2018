@@ -3,38 +3,38 @@
 .data
     a dw 134
     buffer db 255 DUP (0)
-    wrser_str db 10,"wrong symbol error", 10, '$' 
-    ovf_str db 10,"overflow", 10, '$'
-    dbz_str db 10,"dividing by zero error", 10, '$'
+    wrongSymbolMessage db 10,"wrong symbol error", 10, '$' 
+    overflowMessage db 10,"overflow", 10, '$'
+    dividingByZeroMessage db 10,"dividing by zero error", 10, '$'
     dividend db "dividend: $"
     divider db 10,"divider: $"
     result db 10,"result: $"
     separator db "------------------------", 10, '$'
 .code
         
-print_word proc    
+printWord proc    
     mov bx, 10
     xor cx,cx
     
-    loop1:
+    readerLoop:
     xor dx,dx
     div bx
     push dx
     inc cx
     cmp ax,0
-    jnz loop1
+    jnz readerLoop
         
-    cycle:
+    printingLoop:
     pop dx
     add dl, 30h
     mov ah, 02h
     int 21h
-    loop cycle
+    loop printingLoop
         
     ret
-print_word endp
+printWord endp
 
-new_row proc
+newRow proc
     push dx
     push ax
     mov dl, 10
@@ -43,7 +43,7 @@ new_row proc
     pop ax
     pop dx
     ret
-new_row endp
+newRow endp
  
 ; OUT: DX - addr str 
 ; AL - length str
@@ -57,7 +57,7 @@ input proc
     ret       
 input endp
 
-str_to_word proc
+strToWord proc
     mov si,dx          
     mov di,10          
     xor cx,cx
@@ -66,25 +66,24 @@ str_to_word proc
     xor ax,ax          
     xor bx,bx          
     ret
-str_to_word endp
+strToWord endp
 
-str_handler proc
-    cycle_sh:
+strHandler proc
+    handlerLoop:
     mov bl,[si]            
     inc si             
     cmp bl,'0'         
-    jl wrong_symbol_error         
+    jl wrongSymbolError         
     cmp bl,'9'         
-    jg wrong_symbol_error         
+    jg wrongSymbolError         
     sub bl,'0'         
     mul di             
-    jc overflow_error         
+    jc overflowError         
     add ax,bx          
-    jc overflow_error         
-    loop cycle_sh      
-    
+    jc overflowError         
+    loop handlerLoop      
     ret
-str_handler endp
+strHandler endp
 
 main:   
     mov ax, @data
@@ -95,19 +94,19 @@ main:
     int 21h
     
     call input
-    call str_to_word
-    call str_handler
+    call strToWord
+    call strHandler
     push ax
     
     lea dx, divider
     mov ah, 09h
     int 21h
     call input
-    call str_to_word
-    call str_handler    
+    call strToWord
+    call strHandler    
     
     cmp ax,0
-    jz div_by_zero_error
+    jz dividingByZeroError
     push ax
     
     lea dx, result
@@ -119,22 +118,22 @@ main:
     pop ax
     xor dx,dx
     div bx
-    call print_word
-    call new_row
+    call printWord
+    call newRow
     jmp exit
     
-    div_by_zero_error:
-    lea dx, dbz_str
-    jmp show_error
+    dividingByZeroError:
+    lea dx, dividingByZeroMessage
+    jmp showError
     
-    wrong_symbol_error:
-    lea dx, wrser_str
-    jmp show_error
+    wrongSymbolError:
+    lea dx, wrongSymbolMessage
+    jmp showError
     
-    overflow_error:
-    lea dx, ovf_str
+    overflowError:
+    lea dx, overflowMessage
     
-    show_error:
+    showError:
     mov ah, 09h
     int 21h 
     lea dx, separator
