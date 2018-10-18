@@ -1,4 +1,4 @@
-п»ї.model small; ГўГ Г°ГЁГ Г­ГІ 4, Г­Г Г©ГІГЁ ГЁ ГЇГ®ГЄГ Г§Г ГІГј Г±Г Г¬Г®ГҐ Г¤Г«ГЁГ­Г­Г®ГҐ Г±Г«Г®ГўГ®
+.model small; вариант 4, найти и показать самое длинное слово
 .stack 256
 .data
     lengthMax  db 100
@@ -9,7 +9,7 @@
     char db ?
     wordMax db 100 dup('$'),'$'
     wordMaxLength dw 0
-    string db 100 dup ('$')
+    string db 99, 100 dup ('$')
     newLine db 13, 10, '$'
 .code
 
@@ -27,15 +27,12 @@ endp
 input proc 
     push ax
     push dx
-    push bx
-    lea bx,lengthMax
     mov ah,0ah
-    lea dx,string
+    lea dx, string
     int 21h
     mov ah, 9
     mov dx, offset newLine
     int 21h 
-    pop bx
     pop dx
     pop ax
     ret
@@ -71,7 +68,6 @@ change proc
     mov wordMaxLength,cx
     mov si,di
     sub si, cx
-    inc cx
     cld
     lea di, wordMax
     cld
@@ -94,7 +90,6 @@ main:
     mov es, ax
 
     call input
-    xor ax,ax
     lea di, string
     inc di
     mov al, [di]
@@ -117,8 +112,16 @@ main:
     jmp endProgramm
 
 found:
+    cmp cx,0
+    jz toInc
+    toFound:
     call check
     jmp return
+
+    ToInc:
+    inc di
+    jmp toFound
+
 endProgramm:
     mov ax, 4c00h
     int 21h   
