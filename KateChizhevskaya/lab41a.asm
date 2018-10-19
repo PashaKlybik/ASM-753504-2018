@@ -9,19 +9,35 @@
     char db ?
     wordMax db 100 dup('$'),'$'
     wordMaxLength dw 0
+	maxWordFirstPosition dw 0
     string db 99, 100 dup ('$')
     newLine db 13, 10, '$'
 .code
 
 output proc
-    push ax
-    push dx
-    mov dx,offset wordMax
-    mov ah,9
-    int 21h
-    pop dx
-    pop ax
-    ret
+   push ax
+   push dx
+   push si
+   push di
+   push cx
+   mov cx, wordMaxLength
+   mov si,maxWordFirstPosition
+   lea di, wordMax
+   cld
+   cycle1:
+        lodsb
+        stosb
+        xor al,al
+   loop cycle1
+   mov dx,offset wordMax
+   mov ah,9
+   int 21h
+   pop cx
+   pop di
+   pop si
+   pop dx
+   pop ax
+   ret
 endp
 
 input proc 
@@ -58,29 +74,11 @@ check proc
 check endp
 
 change proc
-    push cx
-    push di
-    push ax
-    push dx
-    push si
-    mov cx,lastPosition
-    sub cx,firstPosition
-    mov wordMaxLength,cx
-    mov si,di
-    sub si, cx
-    cld
-    lea di, wordMax
-    cld
-    cycle1:
-        lodsb
-        stosb
-        xor al,al
-    loop cycle1
-    pop si
-    pop dx
-    pop ax
-    pop di
-    pop cx
+	push cx
+    mov wordMaxLength,ax
+	mov cx, firstPosition
+	mov maxWordFirstPosition, cx
+	pop cx
     ret
 change endp
 
@@ -95,28 +93,22 @@ main:
     mov al, [di]
     mov lengthReal,al
     inc di
-    xor cx,cx
     mov cl, lengthReal
     mov al,' '
     cld
     beginAnalysis:
-		mov firstPosition, di
-		repne scasb
-		jmp found
-    return:
-		cmp cx,0
-		JZ toOutput
+        mov firstPosition, di
+        repne scasb		
+        cmp cx,0
+        jz toInc
+        toFound:
+        call check
+        cmp cx,0
+        JZ toOutput
     jmp beginAnalysis
     toOutput:
         call output
     jmp endProgramm
-
-found:
-    cmp cx,0
-    jz toInc
-    toFound:
-    call check
-    jmp return
 
     ToInc:
     inc di
