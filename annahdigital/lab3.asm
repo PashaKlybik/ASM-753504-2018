@@ -242,7 +242,7 @@ main:
 
     cmp bx,0
     jz showErrorMess
-	
+    
     mov cx,ax
     neg cx
     cmp cx,32768
@@ -267,8 +267,8 @@ main:
     cwd
     idiv bx
     call print
-	jmp exit
-	
+    jmp exit
+    
     showErrorMess:
     mov dx,offset divByZeroMessage
     mov ah,09h
