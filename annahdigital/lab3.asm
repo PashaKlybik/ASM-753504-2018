@@ -7,7 +7,6 @@ tooBigMessage db "Oh no! (T___T) This number is too big!  Try again." ,10,13, "$
 wrongSymbolsMessage db "Oh no! (T___T) There are some wrong symbols! Try again. " ,10,13, "$"
 divisoMessage db 10,13, "Enter a divisor. ",10,13, "$" 
 resultMessage db 10,13, "The result is: $"
-reminderMessage db 10,13, "The reminder is: $" 
 blankMessage db 10,13, "$" 
 divByZeroMessage db 10,13, "Can't divide by zero! $"
 .code
@@ -114,7 +113,10 @@ continueEntering:
     jz minus    ;minus
     sub al,'0'
     cmp al,9    ;not numbers:
-    ja wrongSymbol    ;letter/symbol
+    ja wrongSymbolnext    ;letter/symbol
+    cmp al,0
+    jz zeroProcessing
+    continueProcessing:
     xor cx,cx    
     mov cl,al
     mov ax,bx
@@ -129,6 +131,15 @@ continueEntering:
     ja endpr
     here:
     mov bx,ax
+    jmp continueEntering
+    
+zeroProcessing:
+    cmp bx,0
+    jnz continueProcessing
+    mov dl,8
+    mov ah,02h    ; print backspace
+    int 21h
+    call delete
     jmp continueEntering
 
 negative:
@@ -161,7 +172,10 @@ minus:
     cmp si,0
     jnz wrongSymbol
     mov si,1
-    jmp continueEntering    
+    jmp continueEntering 
+    
+wrongSymbolnext:
+    jmp wrongSymbol
     
 bckspace:
     xchg bx,ax
@@ -228,7 +242,7 @@ main:
 
     cmp bx,0
     jz showErrorMess
-    
+	
     mov cx,ax
     neg cx
     cmp cx,32768
@@ -253,21 +267,8 @@ main:
     cwd
     idiv bx
     call print
-
-    xchg cx,dx
-    mov dx,offset reminderMessage
-    mov ah,09h
-    int 21h
-
-    ;print reminder
-    xchg cx,ax
-    test ax, 1000000000000000b
-    jz printIt
-    neg ax
-    printIt:
-    call print
-    jmp exit
-    
+	jmp exit
+	
     showErrorMess:
     mov dx,offset divByZeroMessage
     mov ah,09h
