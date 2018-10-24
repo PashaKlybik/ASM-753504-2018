@@ -1,3 +1,4 @@
+;variant 1
 model small
 .STACK 100h
 .DATA
