@@ -36,9 +36,9 @@ fileInput proc
     cmp minus,1;  if - was inputed
     JZ MinusNumber1
     continue11:		
-		pop cx
-		pop dx
-		pop bx
+        pop cx
+        pop dx
+        pop bx
 ret
 fileInput endp
 
@@ -164,22 +164,22 @@ outputLast proc
 	mov cx,rows
 	mov si,0
 	rowsCycle:
-	    push cx
-	    mov cx,colunms
-	    columnsCycle:
-	        push bx
-	        mov ax, colunms
-	        sub ax,cx 
-	        mov ax, array[si]
-	        inc si
-	        inc si
-	        call allOutput
-	        mov dx, offset tabEntry
-	        call messegeOutput
-	        xor ax,ax
-	        xor dx,dx
-	        pop bx
-	        loop columnsCycle
+        push cx
+        mov cx,colunms
+        columnsCycle:
+            push bx
+            mov ax, colunms
+            sub ax,cx 
+            mov ax, array[si]
+            inc si
+            inc si
+            call allOutput
+            mov dx, offset tabEntry
+            call messegeOutput
+            xor ax,ax
+            xor dx,dx
+            pop bx
+            loop columnsCycle
 	    pop cx
 	    mov dx, offset newLine
 	    call messegeOutput
@@ -227,32 +227,29 @@ main:
 	xor bx,bx
 	mov cx,quantity
 	matrixEntry:
-	    xor dx,dx
-	    call fileInput
-	    mov array[bx], ax
-	    inc bx
-	    inc bx
-	    xor ax,ax
+        xor dx,dx
+        call fileInput
+        mov array[bx], ax
+        inc bx
+        inc bx
+        xor ax,ax
 	loop matrixEntry
 	
 	xor bx,bx
 	mov cx,quantity
 	matrix:
-	    push ax
-	    mov ax,array[bx]
-	    cmp ax,biggestNumber
-	    JGE actions
-	    continue47:
-	    inc bx
-	    inc bx
-	    pop ax
+        push ax
+        mov ax,array[bx]
+        cmp ax,biggestNumber
+        JL continue47		
+        mov array[bx],0
+        continue47:
+        inc bx
+        inc bx
+        pop ax
 	loop matrix
 	call outputLast
 jmp engProgramm
-
-actions:
-	mov array[bx],0
-	jmp continue47
 
 engProgramm:
 	mov ax, 4c00h
