@@ -5,7 +5,6 @@ a dw 2
 b dw 3
 c dw 4
 d dw 5
-
 .code
 main:
 mov ax, @data 
@@ -13,17 +12,7 @@ mov ds, ax
 mov es, ax 
 mov ax,a
 mov si,a
-
-cmp ax,a
-ja L1
-mov ax,a
-jmp next
-L1:
-mov ax,a
-mov si,a
-next:
 mov bx,b
-
 cmp ax,bx
 ja L2
 mov ax,bx
@@ -40,25 +29,18 @@ mov cx,c
 cmp ax,cx
 ja L3
 mov ax,cx
-
-
 L3: mov ax,ax
 cmp cx,si
 ja P1
 mov si,cx
 jmp next2
-
 P1:mov si,si
 next2:
 mov dx,d
 cmp ax,dx
 ja L4
 mov ax,dx
-
-
-
 jmp next3
-
 L4: mov ax,ax
 cmp si,dx
 ja N
