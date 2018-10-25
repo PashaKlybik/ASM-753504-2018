@@ -22,8 +22,6 @@ ja P0
 mov si,si
 jmp net
 P0:mov si,bx
-mov si,bx
-net:
 next1:
 mov cx,c
 cmp ax,cx
