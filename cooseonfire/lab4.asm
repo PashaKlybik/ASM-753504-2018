@@ -9,7 +9,41 @@ string db 253 dup(?)
 
 .code
 
-proc vowelStatWordAmount
+proc print
+    push ax
+    push bx   ;сохраняем содержимое регистов
+    push cx
+    push dx
+    xor cx,cx  
+    mov bx, 10
+
+remains:
+    xor dx, dx 
+    div bx
+    add dl, '0' ;получаем очередную цифру и преобразуем в код символа, кладём в стек
+    push dx
+    inc cx
+    test ax, ax ;проверка, есть ли ещё разряды в ax
+    jnz remains
+
+output:
+    pop dx
+    mov ah, 02h
+    int 21h
+    loop output
+    mov dl, 10 ;перевод каретки на новую строку
+    mov ah, 02h
+    int 21h
+
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+    ret
+endp
+
+
+proc vowelStartWordAmount
     push ax
     push cx
     push dx 
@@ -34,7 +68,7 @@ skipWhitespaces:
     inc cx
 
 checkVowel:
-    jcxz endOfTheWord
+    jcxz endOfTheText
     mov al, [di]
     cmp al, 'A'  
     jz vowel
@@ -63,9 +97,9 @@ vowel:
 skipTheRestLetters:
     mov al, ' '
     repne scasb
-    jcxz endOfTheWord
+    jcxz endOfTheText
     jz skipWhitespaces
-    jmp endOfTheWord
+    jmp endOfTheText
 
 emptyString:
     mov bx, 0
@@ -75,7 +109,7 @@ emptyString:
     pop ax
     ret
 
-endOfTheWord:
+endOfTheText:
     pop di
     pop dx
     pop cx
@@ -106,15 +140,12 @@ main:
     int 21h
 
     call vowelStatWordAmount
-    push dx
+    push ax
+    mov ax, bx
     call newLine
-    xor dx, dx
-    mov dx, bx
-    add dx, '0'
-    mov ah, 02h
-    int 21h
+    call print
+    pop ax
     call newLine
-    pop dx
 
     mov ax, 4c00h
     int 21h
