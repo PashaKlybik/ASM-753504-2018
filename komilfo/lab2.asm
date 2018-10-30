@@ -139,6 +139,14 @@ main:
     lea dx, separator
     mov ah, 09h
     int 21h 
+    
+    mov cx,100h
+    sub cx, sp
+    clear:
+    pop si    
+    loop clear
+    xor si, si
+    
     jmp main    
     
     exit:          
