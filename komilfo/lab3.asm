@@ -226,6 +226,13 @@ showError:
     mov ah, 09h
     int 21h
     
+    mov cx,100h
+    sub cx, sp
+    clear:
+    pop si
+    xor si, si
+    loop clear
+    
     jmp main
     
 mainExit:    
