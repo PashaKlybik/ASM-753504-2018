@@ -36,7 +36,7 @@ inputSignedWord endp
 inputString proc
     push cx         
     mov cx,ax   
-    mov al, 6
+    mov al, 7
     mov ah,0Ah      
     mov [buffer],al 
     mov byte[buffer+1],0   
