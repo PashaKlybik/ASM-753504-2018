@@ -9,44 +9,34 @@
 main:
     mov ax, @data
     mov ds, ax
-    
     mov ax,a
     dec ax
-    mov bx,a
-    and ax,bx
-    mov bx,b
-    cmp ax,bx
-	jc firstBranch
+    and ax,a
+    cmp ax,b    
+    jc firstBranch
 
-	mov ax,0
-	mov ax,c
-	mov bx,0
-	mov bx,b
-	add ax,bx
-	mov bx,d
-	cmp bx,ax
-	jc secondBranch
+    mov ax,c
+    add ax,b
+    cmp d,ax
+    jc secondBranch
  
-	mov ax,c
-	mov bx,d
-	div bx
-	add ax,dx
-	jmp endBranch
+    mov ax,c
+    div d
+    add ax,dx
+    jmp endBranch
 
-	secondBranch:
-	mov ax,c
-	mov bx,d
-	XOR ax,bx
-	jmp endBranch
+    secondBranch:
+    mov ax,c
+    XOR ax,d
+    jmp endBranch
 
-	firstBranch:
-	mov bx,b
-	inc bx
-	mov ax,b
-	OR ax,bx
+    firstBranch:
+    mov bx,b
+    inc bx
+    mov ax,b
+    OR ax,bx
 	    
-	endBranch:
-
-	mov ax,4c00h
-    	int 21h
+    endBranch:
+    mov ax,4c00h
+    int 21h
 end main
