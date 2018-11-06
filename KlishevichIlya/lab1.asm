@@ -1,3 +1,14 @@
+.model small
+.stack 256
+.data
+a dw 2
+b dw 3
+c dw 4
+d dw 5
+.code
+main:
+mov ax, @data 
+mov ds, ax 
 mov es, ax 
 mov ax,a
 mov si,a
@@ -39,3 +50,4 @@ sub ax,si
 mov ax,4c00h 
 int 21h
 end main
+
