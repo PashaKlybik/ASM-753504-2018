@@ -43,10 +43,10 @@ proc newLine
     push ax
     push dx
 
-	mov ah, 02h
+    mov ah, 02h
     mov dl, 10
-	int 21h
-	
+    int 21h
+    
     pop dx
     pop ax
     ret
@@ -56,17 +56,17 @@ main:
     mov ax, @data
     mov ds, ax
     mov es, ax
-	
-	lea di, string    
+    
+    lea di, string    
     mov dx, di
     mov ah, 0ah
-	int 21h
-	call newLine
-	inc dx
-    call process
-	mov ah, 09h   
     int 21h
-	call newLine
+    call newLine
+    inc dx
+    call process
+    mov ah, 09h   
+    int 21h
+    call newLine
     
     mov ax, 4c00h
     int 21h
