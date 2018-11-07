@@ -5,8 +5,6 @@
 .stack 256
 .data
     string db "aajd ad dfffd 4ofkLLpaec",10,13,'$'
-    flag db 0
-    buffer db 250 dup('$')
 .code
 
 proc process
