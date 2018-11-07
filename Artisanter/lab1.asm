@@ -28,12 +28,12 @@ main:
     add cx, ax
     
     cmp bx, cx
-        ;if(a * c + b * d = a * d + b * c)
-        je equal    
+    ;if(a * c + b * d = a * d + b * c)
+    je equal    
     mov ax, c
     cmp ax, a
-        ;if(a > c)
-        jc aIsBigger   
+    ;if(a > c)
+    jc aIsBigger   
     ;else AX = a – (b OR c)		
     mov bx, b
     or bx, c
