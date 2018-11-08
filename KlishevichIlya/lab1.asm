@@ -17,37 +17,36 @@ main:
     ja ifAKicker
     mov ax,bx
     jmp goToC
-    ifAKicker:cmp si,bx
+    ifAKicker:
+    cmp si,bx
     ja compareMin
-    mov si,si
-    compareMin:mov si,bx
+    compareMin:
+    mov si,bx
     
     goToC:
     mov cx,c
     cmp ax,cx
     ja ifKicker
     mov ax,cx
-    ifKicker: mov ax,ax
+    ifKicker: 
     cmp cx,si
     ja ifMinRest
     mov si,cx
     jmp goToD
-    ifMinRest:mov si,si
-    
+    ifMinRest:
+        
     goToD:
     mov dx,d
     cmp ax,dx
     ja ifAMax
     mov ax,dx
     jmp goToSplit
-    ifAMax: mov ax,ax
+    ifAMax: 
     cmp si,dx
     ja ifDxMin
-    mov si,si
-    jmp split
-    ifDxMin: mov si,dx
+    ifDxMin:
+    mov si,dx
     
-    split:
     goToSplit:
     sub ax,si
     
