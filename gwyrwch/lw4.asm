@@ -54,8 +54,7 @@ SwapWordsInRange proc   ; swap words in range like  " lpol  lpoo "
     mov byte ptr[bx], 0
 
     ; cx = right - left + 1
-    mov cx, 0
-    add cx, right
+    mov cx, right
     sub cx, left
     inc cx
 
