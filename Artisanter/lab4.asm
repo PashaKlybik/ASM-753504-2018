@@ -4,7 +4,7 @@
 .model small
 .stack 256
 .data
-    string db "aajd ad dfffd 4ofkLLpaec",10,13,'$'
+    string db 250, 250 dup('$')
 .code
 
 proc process
@@ -39,16 +39,34 @@ endProcess:
     ret
 endp
 
+proc newLine
+    push ax
+    push dx
+
+    mov ah, 02h
+    mov dl, 10
+    int 21h
+    
+    pop dx
+    pop ax
+    ret
+endp
+
 main:
     mov ax, @data
     mov ds, ax
     mov es, ax
     
-    lea dx, string
-    mov ah, 09h
-    int 21h     
-    call process
+    lea di, string    
+    mov dx, di
+    mov ah, 0ah
     int 21h
+    call newLine
+    inc dx
+    call process
+    mov ah, 09h   
+    int 21h
+    call newLine
     
     mov ax, 4c00h
     int 21h
