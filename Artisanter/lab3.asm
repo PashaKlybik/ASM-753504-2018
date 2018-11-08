@@ -85,8 +85,20 @@ pass:
     js inputError
     mov dl, cl
     add dx, ax
-    js inputError
+    js maxCheck
     jmp  getDigit  
+    
+maxCheck:
+    neg  dx
+    js inputError
+    test  ch, 2
+    jz inputError
+    mov ah, 01h
+    int 21h
+    cmp al, 13
+    jne inputError
+    mov ax, dx
+    jmp noError
     
 endOfLine:  
     test ch, 1
@@ -96,6 +108,7 @@ endOfLine:
     jz noError
     neg ax
     jno noError
+
 inputError:
     stc    ;CF=1 
     jmp endInput     
@@ -117,7 +130,7 @@ retry:
     int 21h    
     call input
     jc invalidInputError
-    push ax
+    mov cx, ax
     mov dl, '/'
     mov ah, 02h
     int 21h
@@ -131,13 +144,20 @@ retry:
     mov dl, '='
     mov ah, 02h
     int 21h
-    pop ax
+    mov ax, cx
     xor dx, dx
     test ax,ax
     jns positive
     sub dx, 1
+    cmp bx, -1
+    jne positive
+    neg ax
+    js invalidInputError
+    call output
+    jmp endAll 
 positive:
     idiv bx
+    ;jc invalidInputError
     call output
     jmp endAll
     
