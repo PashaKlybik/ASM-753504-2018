@@ -29,18 +29,18 @@ main:
     add ax,dx
     jmp endBranch
 
-  secondBranch:
+secondBranch:
     mov ax,c
     XOR ax,d
     jmp endBranch
 
-  firstBranch:
+firstBranch:
     mov bx,b
     mov ax,bx
     inc bx
     OR ax,bx
 	    
-  endBranch:
+endBranch:
     mov ax,4c00h
     int 21h
     
