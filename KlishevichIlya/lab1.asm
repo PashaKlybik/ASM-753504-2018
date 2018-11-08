@@ -9,8 +9,7 @@ d dw 5
 main:
     mov ax, @data 
     mov ds, ax 
-    mov es, ax 
-    
+        
     mov ax,a
     mov si,a
     mov bx,b
