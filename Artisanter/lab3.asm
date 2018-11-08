@@ -27,14 +27,14 @@ toChar:
     inc cl 
     test ax, ax
     jnz toChar
-	
+    
     mov ah, 02h   
     test ch,ch
     jz outChar
     mov dl, '-' 
-	int 21h
+    int 21h
     xor ch,ch
-	
+    
 outChar:
     pop dx
     int 21h
@@ -98,7 +98,7 @@ endOfLine:
     jno noError
 inputError:
     stc    ;CF=1 
-	jmp endInput     
+    jmp endInput     
 noError:
     clc    ;CF=0  
 endInput:
@@ -111,7 +111,10 @@ endp
 main:
     mov ax, @data
     mov ds, ax
-    
+retry:
+    mov dl, 10
+    mov ah, 02h
+    int 21h    
     call input
     jc invalidInputError
     push ax
@@ -142,12 +145,13 @@ divByZeroError:
     mov dx, offset divByZeroErrorMes
     mov ah, 09h
     int 21h
-    jmp endAll
+    jmp retry
     
 invalidInputError:
     mov dx, offset inputErrorMes
     mov ah, 09h
     int 21h
+    jmp retry
     
 endAll:
     mov ax, 4c00h
