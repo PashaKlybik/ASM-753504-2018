@@ -90,7 +90,7 @@ pass:
     
 maxCheck:
     neg  dx
-    js inputError
+    jns inputError
     test  ch, 2
     jz inputError
     mov ah, 01h
@@ -157,7 +157,6 @@ retry:
     jmp endAll 
 positive:
     idiv bx
-    ;jc invalidInputError
     call output
     jmp endAll
     
