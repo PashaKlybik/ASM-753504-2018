@@ -46,7 +46,7 @@ point1:
     xor dx,dx
     div bx
     add ax,a
-    jmp endPoint
+jmp endPoint
 	
 point2:
     mov ax, a
