@@ -3,8 +3,8 @@
 .data
     a dw 3
     b dw 2
-	c dw 33
-	d dw 3
+    c dw 33
+    d dw 3
 
 .code
 main:
