@@ -23,6 +23,7 @@ Result          dw      ?
 ; ax - число для отображения
 Show_ax PROC
     xor     di, di      ; di - кол. цифр в числе, обнуление
+    mov     cx, 10
     
 @@Conv:
     xor     dx, dx
@@ -130,7 +131,6 @@ Main    PROC    FAR
     mov     ah, 09h
     int     21h
     mov     ax, Dividend
-    mov     cx, 10
     call    Show_ax
     lea     dx, CR_LF          ; перевод строки (на новую строку)
     mov     ah, 09h
@@ -158,7 +158,6 @@ Main    PROC    FAR
     mov     ah, 09h
     int     21h
     mov     ax, Divider
-    mov     cx, 10
     call    Show_ax
     lea     dx, CR_LF
     mov     ah, 09h
@@ -174,7 +173,6 @@ Main    PROC    FAR
     mov     ah, 09h
     int     21h 
     mov     ax, Result
-    mov     cx, 10
     call    Show_ax
     lea     dx, CR_LF            ;переход на новую сктроку
     mov     ah, 09h
