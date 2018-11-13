@@ -30,7 +30,7 @@ main:
     mov ax, a
     mul a
     mul a
-	add ax, dx
+    add ax, dx
     cmp ax, cx
     je point2
     mov ax, b
