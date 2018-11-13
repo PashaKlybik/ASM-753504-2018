@@ -13,26 +13,24 @@ main:
 	
     mov ax, a
     mov bx, b
-    mov cx, c
     and bx, ax
-    mov ax, cx
+    mov ax, c
     mul c
     mul c
     mul c 
     cmp bx, ax
 		
-je point1
+    je point1
     mov cx, c
-    mov bx, b
-    mov ax, a
-    add cx, bx	
-    mul a
-    mul a	
-    mov bx, ax
     mov ax, b
+    add cx, ax
     mul b
     mul b
-    add ax, bx
+    mov dx, ax
+    mov ax, a
+    mul a
+    mul a
+	add ax, dx
     cmp ax, cx
     je point2
     mov ax, b
@@ -45,6 +43,7 @@ point1:
     mov bx,b
     xor dx,dx
     div cx
+    xor dx,dx
     div bx
     add ax,a
     jmp endPoint
