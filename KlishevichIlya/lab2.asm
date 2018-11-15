@@ -1,6 +1,7 @@
 .model small                  
 .stack 16h                    
 .data  
+
 msgA db 'Enter A = ', '$ '
 msgB db 13,10,'Enter B = ', '$ '
 msg5 db 13,10,'Result X = ', '$ '     
@@ -11,124 +12,102 @@ reallen db ?
 numfld db 5 dup(30h)
 mult10 dw 0
 ascval db 5 dup(30h),'$'             
-  x  dw  ?
-
-  a  dw  0
-  b  dw  0
+x  dw  ?
+a  dw  0
+b  dw  0
 c dw 0
-  z dw 0
+z dw 0
 u dw 0
- 
+
 .code                        
-start: mov ax, @data          
-       mov ds, ax   
-       mov ah,9
+start: 
+	mov ax, @data          
+        mov ds, ax   
+        mov ah,9
 
-       lea dx, msgA ; Сообщение "Enter A = "
-       int 21H;
+        lea dx, msgA ; РЎРѕРѕР±С‰РµРЅРёРµ "Enter A = "
+        int 21H;
  
-       mov ah,0AH
-       lea dx,msg
-       int 21H   
-       call asbin ; Ввод числа с клавиатуры
-       mov ax,z
-       mov a,ax
+        mov ah,0AH
+        lea dx,msg
+        int 21H   
+        call inpt ; Р’РІРѕРґ С‡РёСЃР»Р° СЃ РєР»Р°РІРёР°С‚СѓСЂС‹
+        mov ax,z
+        mov a,ax
 
+        mov ah,9
+        lea dx, msgB ; РЎРѕРѕР±С‰РµРЅРёРµ "Enter B = "
+        int 21H;
  
-       mov ah,9
-       lea dx, msgB ; Сообщение "Enter B = "
-       int 21H;
- 
-       mov ah,0AH
-       lea dx,msg
-       int 21H   
-       call asbin ; Ввод числа с клавиатуры
-       mov ax,z
-       mov b,ax
- 
-    
-       mov ah,9
-       lea dx, msg5 ; Сообщение "Result X = "
-       int 21H;       
-   
-   
-       mov bx, dx
-       mov cx, ax             
- 
-       xor dx,dx
-       mov ax, a    
-       mov bx, b        
-       div bx ; Делим 2 числа                
-       mov x, ax
-
- 
- 
-call outp ; Вывод результата на экран 
+        mov ah,0AH
+        lea dx,msg
+        int 21H   
+        call inpt ; Р’РІРѕРґ С‡РёСЃР»Р° СЃ РєР»Р°РІРёР°С‚СѓСЂС‹
+        mov ax,z
+        mov b,ax
      
-
-mov ax, 4c00h
-int 21h
-
+        mov ah,9
+        lea dx, msg5 ; РЎРѕРѕР±С‰РµРЅРёРµ "Result X = "
+        int 21H;       
       
-                  
-asbin proc ; Процедура ввода с клавиатуры
-       mov mult10,0001
-       mov z,0
-       mov cx,10
-       lea si,numfld-1
-       mov bl,reallen
-       sub bh,bh
-b20:
-       mov al,[si+bx]
-	cmp al,'0'
-	jb Err
-	cmp al,'9'
-	ja Err
-       and ax,000fh
-       mul mult10
-       add z,ax
-       mov ax,mult10
-       mul cx
-       mov mult10,ax
-        dec bx
-       jnz b20
-       ret
-asbin  endp
+        mov bx, dx
+        mov cx, ax             
  
-Err:
-	lea dx, msg6
+        xor dx,dx
+        mov ax, a    
+        mov bx, b        
+        div bx            
+        mov x, ax 
+	call outp 	; Р’С‹РІРѕРґ СЂРµР·СѓР»СЊС‚Р°С‚Р° РЅР° СЌРєСЂР°РЅ
+   
+	mov ax, 4c00h
+	int 21h
+   
+inpt proc 		; РџСЂРѕС†РµРґСѓСЂР° РІРІРѕРґР° СЃ РєР»Р°РІРёР°С‚СѓСЂС‹
+      	 mov mult10,0001
+      	 mov z,0
+       	 mov cx,10
+       	 lea si,numfld-1
+      	 mov bl,reallen
+      	 sub bh,bh
+  @@Loop:
+       	 mov al,[si+bx]
+	 cmp al,'0'
+	 jb Err
+	 cmp al,'9'
+	 ja Err
+         and ax,000fh
+       	 mul mult10
+       	 add z,ax
+       	 mov ax,mult10
+       	 mul cx
+       	 mov mult10,ax
+         dec bx
+       	 jnz @@Loop
+       	 ret
+inpt  endp
+ 
+  Err:
+     	lea dx, msg6
+     	mov ah, 09h
+     	int 21h
+     	mov ax, 4c00h
+     	int 21h
 
-    mov ah, 09h
-
-    int 21h
-
-    mov ax, 4c00h
-
-    int 21h
-	
-
-
-
-
-outp proc ; Процедура вывода на экран
-       mov cx,10                ; система счисления
-       lea si, ascval+4         ; Установка указателя на конец массива ascval
-       mov ax, x                ; Результат х занести в ax
-c20:   cmp ax,10                ; Сравнить результат с числом 10
-        
-       jb c30                   ; Если меньше то преобразовывать не надо
-       
-       lea dx, msgB ; Сообщение "Enter B = "
-       int 21H;
-     
-c30:   or al, 30h               ; Если остаток меньше 10, то вывод результата на экран
-       mov [si], al             ; дисплея командами (см. ниже)
-       lea dx, ascval           ; Загрузка адреса массива
-       mov ah, 9                ; Вызов 9-ой функции MS-DOS 
+outp proc 			 ; РџСЂРѕС†РµРґСѓСЂР° РІС‹РІРѕРґР° РЅР° СЌРєСЂР°РЅ
+        mov cx,10                ; РЎРёСЃС‚РµРјР° СЃС‡РёСЃР»РµРЅРёСЏ
+        lea si, ascval+4         ; РЈСЃС‚Р°РЅРѕРІРєР° СѓРєР°Р·Р°С‚РµР»СЏ РЅР° РєРѕРЅРµС† РјР°СЃСЃРёРІР°
+        mov ax, x                ; Р РµР·СѓР»СЊС‚Р°С‚ С… Р·Р°РЅРѕСЃРёС‚СЃСЏ РІ Р°С…
+ 	cmp ax,10                ; Р РµР·СѓР»СЊС‚Р°С‚ СЃСЂР°РІРЅРёРІР°РµС‚СЃСЏ СЃ 10
+        jb @@More                ; Р•СЃР»Рё РјРµРЅСЊС€Рµ,С‚Рѕ РЅРµ РЅР°РґРѕ РїСЂРµРѕСЂР±СЂР°Р·РѕРІС‹РІР°С‚СЊ
+        lea dx, msgB   		 ; РЎРѕРѕР±С‰РµРЅРёРµ  "Enter B = "
+        int 21H;
+ @@More:   
+       or al, 30h               ; Р•СЃР»Рё РѕСЃС‚Р°С‚РѕРє РјРµРЅСЊС€Сѓ 10, С‚Рѕ РІС‹РІРѕРґРј РЅР° СЌРєСЂР°РЅ
+       mov [si], al             
+       lea dx, ascval           ; РђРґСЂРµСЃ РјР°СЃСЃРёРІР°
+       mov ah, 9                
        int 21h
-       ret                      ; Возврат в головную программу из п/программы
-outp endp               ; Конец процедуры
- 
-
-
+       ret                      ; Р’С‹С…РѕРґ РёР· Рї\РїСЂРѕРіСЂР°РјРјС‹
+outp endp               	; РљРѕРЅРµС† РїСЂРѕС†РµРґСѓСЂС‹
 end start
