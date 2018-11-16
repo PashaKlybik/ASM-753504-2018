@@ -1,53 +1,45 @@
 .model small
 .stack 256
 .data
-a dw 2
-b dw 3
+a dw 1
+b dw 6
 c dw 4
 d dw 5
 .code
 main:
     mov ax, @data 
     mov ds, ax 
-        
+       
     mov ax,a
-    mov si,a
+    mov si,b
     mov bx,b
     cmp ax,bx
-    ja ifAKicker
+    ja goToC
+    mov si, ax
     mov ax,bx
-    jmp goToC
-    ifAKicker:
-    cmp si,bx
-    ja compareMin
-    compareMin:
-    mov si,bx
     
-    goToC:
+goToC:
     mov cx,c
     cmp ax,cx
     ja ifKicker
     mov ax,cx
-    ifKicker: 
+ifKicker: 
     cmp cx,si
-    ja ifMinRest
+    ja goToD
     mov si,cx
-    jmp goToD
-    ifMinRest:
-        
-    goToD:
+    
+goToD:
     mov dx,d
     cmp ax,dx
     ja ifAMax
     mov ax,dx
     jmp goToSplit
-    ifAMax: 
+ifAMax: 
     cmp si,dx
-    ja ifDxMin
-    ifDxMin:
+    jna goToSplit
     mov si,dx
-    
-    goToSplit:
+       
+goToSplit:
     sub ax,si
     
     mov ax,4c00h 
