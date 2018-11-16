@@ -64,14 +64,14 @@ start:
 	int 21h
    
 inpt proc 		; Процедура ввода с клавиатуры
-      	 mov mult10,0001
+	 mov mult10,0001
       	 mov z,0
        	 mov cx,10
        	 lea si,numfld-1
       	 mov bl,reallen
       	 sub bh,bh
   @@Loop:
-       	 mov al,[si+bx]
+  	 mov al,[si+bx]
 	 cmp al,'0'
 	 jb Err
 	 cmp al,'9'
