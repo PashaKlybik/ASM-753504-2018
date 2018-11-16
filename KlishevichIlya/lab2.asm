@@ -21,7 +21,7 @@ u dw 0
 
 .code                        
 start: 
-	mov ax, @data          
+	    mov ax, @data          
         mov ds, ax   
         mov ah,9
 
@@ -42,7 +42,7 @@ start:
         mov ah,0AH
         lea dx,msg
         int 21H   
-        call inpt ; Ввод числа с клавиатуры
+        call inpt   ; Ввод числа с клавиатуры
         mov ax,z
         mov b,ax
      
@@ -58,24 +58,24 @@ start:
         mov bx, b        
         div bx            
         mov x, ax 
-	call outp 	; Вывод результата на экран
+	    call outp 	; Вывод результата на экран
    
-	mov ax, 4c00h
-	int 21h
+	    mov ax, 4c00h
+	    int 21h
    
-inpt proc 		; Процедура ввода с клавиатуры
-	 mov mult10,0001
+inpt proc 		    ; Процедура ввода с клавиатуры
+	     mov mult10,0001
       	 mov z,0
        	 mov cx,10
        	 lea si,numfld-1
       	 mov bl,reallen
       	 sub bh,bh
   @@Loop:
-  	 mov al,[si+bx]
-	 cmp al,'0'
-	 jb Err
-	 cmp al,'9'
-	 ja Err
+  	     mov al,[si+bx]
+	     cmp al,'0'
+	     jb Err
+	     cmp al,'9'
+	     ja Err
          and ax,000fh
        	 mul mult10
        	 add z,ax
@@ -94,20 +94,20 @@ inpt  endp
      	mov ax, 4c00h
      	int 21h
 
-outp proc 			 ; Процедура вывода на экран
+outp proc 			             ; Процедура вывода на экран
         mov cx,10                ; Система счисления
         lea si, ascval+4         ; Установка указателя на конец массива
         mov ax, x                ; Результат х заносится в ах
- 	cmp ax,10                ; Результат сравнивается с 10
+ 	    cmp ax,10                ; Результат сравнивается с 10
         jb @@More                ; Если меньше,то не надо преорбразовывать
-        lea dx, msgB   		 ; Сообщение  "Enter B = "
+        lea dx, msgB   		     ; Сообщение  "Enter B = "
         int 21H;
  @@More:   
-       or al, 30h               ; Если остаток меньшу 10, то выводм на экран
+       or al, 30h                ; Если остаток меньшу 10, то выводм на экран
        mov [si], al             
-       lea dx, ascval           ; Адрес массива
+       lea dx, ascval            ; Адрес массива
        mov ah, 9                
        int 21h
-       ret                      ; Выход из п\программы
-outp endp               	; Конец процедуры
+       ret                       ; Выход из п\программы
+outp endp               	     ; Конец процедуры
 end start
