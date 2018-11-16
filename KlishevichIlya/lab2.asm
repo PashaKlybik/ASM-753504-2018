@@ -72,7 +72,7 @@ inpt proc 		    ; Процедура ввода с клавиатуры
       	 sub bh,bh
   @@Loop:
   	     mov al,[si+bx]
-	       cmp al,'0'
+         cmp al,'0'
   	     jb Err
   	     cmp al,'9'
   	     ja Err
