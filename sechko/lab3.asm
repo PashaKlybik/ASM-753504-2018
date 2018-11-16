@@ -39,7 +39,7 @@ Show_ax PROC
         jns     @@Conv
         push    ax
         mov     dx, '-'
-        mov     ah, 2           ; ah - функция вывода символа на экран
+        mov     ah, 2           
         int     21h
         pop     ax
  
@@ -84,7 +84,6 @@ Str2Num PROC
         push    ds
         push    es
         push    si
- 
         push    ds
         pop     es
  
