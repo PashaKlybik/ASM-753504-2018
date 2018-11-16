@@ -64,26 +64,26 @@ start:
 	      int 21h
    
 inpt proc 		    ; Процедура ввода с клавиатуры
-	       mov mult10,0001
-      	 mov z,0
-       	 mov cx,10
-       	 lea si,numfld-1
-      	 mov bl,reallen
-      	 sub bh,bh
-  @@Loop:
-  	     mov al,[si+bx]
-         cmp al,'0'
-  	     jb Err
-  	     cmp al,'9'
-  	     ja Err
-         and ax,000fh
-       	 mul mult10
-       	 add z,ax
-       	 mov ax,mult10
-       	 mul cx
-       	 mov mult10,ax
-	       dec bx
-       	 jnz @@Loop
+	       mov mult10,0001      
+      	 mov z,0              ;обнуление результата
+         mov cx,10            ;основание системы счисления
+       	 lea si,numfld-1      :устанвока указателя на начало буфера
+      	 mov bl,reallen       ;фактическое кол-во символов числа
+      	 sub bh,bh            ;обнуление регистра 
+  @@Loop:                     ;цикл преобразования в число
+  	     mov al,[si+bx]       ;загрузка символа из конца буфера       
+         cmp al,'0'           
+  	     jb Err               
+  	     cmp al,'9'           
+  	     ja Err               
+         and ax,000fh         ;беру 4 последение цифры
+       	 mul mult10            
+       	 add z,ax             ;прибавление промежуточного рез-та
+       	 mov ax,mult10        ;загрузка в ax нового значения
+       	 mul cx               ;умножение на 10
+       	 mov mult10,ax        ;новое значение 
+	       dec bx               ;на след. разряд числа
+       	 jnz @@Loop           ;продолжаем цикл
        	 ret
 inpt  endp
  
@@ -109,5 +109,5 @@ outp proc 			                 ; Процедура вывода на экран
        mov ah, 9                
        int 21h
        ret                       ; Выход из п\программы
-outp endp               	     ; Конец процедуры
+outp endp               	       ; Конец процедуры
 end start
