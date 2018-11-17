@@ -15,6 +15,7 @@ Dividend        dw      ?
 Divider         dw      ?
 Result          dw      ?
 Sing            dw      0
+Div0            dw      0
  
 .CODE
  
@@ -127,6 +128,12 @@ Str2Num PROC
         pop     si         ;проверка на знак
         push    si
         inc     si
+
+        cmp     Div0, 1
+        jnz     @@Pox
+        cmp     ax, 0
+        jz      @@Error
+@@Pox:
         cmp     byte ptr [si], '-'
         jne     @@Check    ;если должно быть положительным
         neg     ax         ;если должно быть отрицательным
@@ -221,6 +228,7 @@ Main:
         int     21h
  
         ; преобразование строки в число
+        mov     Div0, 1
         lea     si, KeyBuf+1
         lea     di, Divider
         call    Str2Num
