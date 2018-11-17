@@ -1,4 +1,4 @@
-.MODEL  Small
+﻿.MODEL  Small
 .STACK  100h 
 .DATA
  
@@ -159,7 +159,7 @@ Str2Num PROC
         ret
 Str2Num ENDP
  
-Main    PROC    FAR
+Main:
         mov     ax, @DATA
         mov     ds, ax
         mov     es, ax
@@ -296,5 +296,4 @@ Main    PROC    FAR
  
         mov     ax, 4c00h
         int     21h
-Main    ENDP 
 END     Main
