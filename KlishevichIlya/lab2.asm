@@ -21,7 +21,7 @@ u dw 0
 
 .code                        
 start: 
-	      mov ax, @data          
+	    mov ax, @data          
         mov ds, ax   
         mov ah,9
 
@@ -58,13 +58,13 @@ start:
         mov bx, b        
         div bx            
         mov x, ax 
-	      call outp 	; Вывод результата на экран
+	    call outp 	; Вывод результата на экран
    
-	      mov ax, 4c00h
-	      int 21h
+	    mov ax, 4c00h
+	    int 21h
    
 inpt proc 		    ; Процедура ввода с клавиатуры
-	       mov mult10,0001      
+	     mov mult10,0001      
       	 mov z,0              ;обнуление результата
          mov cx,10            ;основание системы счисления
        	 lea si,numfld-1      ;устанвока указателя на начало буфера
@@ -84,6 +84,8 @@ inpt proc 		    ; Процедура ввода с клавиатуры
        	 mov mult10,ax        ;новое значение 
 	     dec bx               ;на след. разряд числа
        	 jnz @@Loop           ;продолжаем цикл
+		 cmp z,0
+		 jbe Err
        	 ret
 inpt  endp
  
@@ -98,7 +100,7 @@ outp proc 			                 ; Процедура вывода на экран
         mov cx,10                ; Система счисления
         lea si, ascval+4         ; Установка указателя на конец массива
         mov ax, x                ; Результат х заносится в ах
-	      cmp ax,10                ; Результат сравнивается с 10
+	    cmp ax,10                ; Результат сравнивается с 10
         jb @@More                ; Если меньше,то не надо преорбразовывать
         lea dx, msgB   		       ; Сообщение  "Enter B = "
         int 21H;
