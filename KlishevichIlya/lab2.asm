@@ -6,16 +6,16 @@ msgA db 'Enter A = ', '$ '
 msgB db 13,10,'Enter B = ', '$ '
 msg5 db 13,10,'Result X = ', '$ '     
 msg6 db 13,10,'Error! ', '$ '           
-msg label byte
-maxnum db 6 
+msg label byte			;массив для ввода символов
+maxnum db 6 			;длина массива
 reallen db ?
 numfld db 5 dup(30h)
 mult10 dw 0
-ascval db 5 dup(30h),'$'             
-x  dw  ?
-a  dw  0
+ascval db 10 dup(30h),13,10,'$'      ;массив символов для вывода       
+x  dw  ?				;результат	
+a  dw  0				;коэффиценты
 b  dw  0
-c dw 0
+c dw 1000
 z dw 0
 u dw 0
 
@@ -96,20 +96,25 @@ inpt  endp
      	mov ax, 4c00h
      	int 21h
 
-outp proc 			                 ; Процедура вывода на экран
+outp proc 			             ; Процедура вывода на экран
         mov cx,10                ; Система счисления
-        lea si, ascval+4         ; Установка указателя на конец массива
+        lea si, ascval+9         ; Установка указателя на конец массива
         mov ax, x                ; Результат х заносится в ах
+@@More:
 	    cmp ax,10                ; Результат сравнивается с 10
-        jb @@More                ; Если меньше,то не надо преорбразовывать
-        lea dx, msgB   		       ; Сообщение  "Enter B = "
-        int 21H;
- @@More:   
+        jb @@Less                ; Если меньше,то не надо преорбразовывать
+		xor dx,dx				 ; Очистка dx для деления
+		div cx					 ; Делим на 10
+		or dl,30h				 ; Остаток к ASCII
+		mov [si],dl
+		dec si
+		jmp @@More
+@@Less:   
        or al, 30h                ; Если остаток меньшу 10, то выводм на экран
        mov [si], al             
        lea dx, ascval            ; Адрес массива
        mov ah, 9                
        int 21h
        ret                       ; Выход из п\программы
-outp endp               	       ; Конец процедуры
+outp endp               	     ; Конец процедуры
 end start
