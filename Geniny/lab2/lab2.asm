@@ -1,97 +1,184 @@
 .model small
 .stack 256
 .data
-	errorMessage db 'Error!$'
-	endLine      db 13, 10, '$'
-	firstBufStr  db '     $'
-	secondBufStr db '     $'
-	divChar      db '/$'
-	equalityChar      db '=$'
+    
+	divChar db '/',13,10,'$'
+	equalityChar db '= ',13,10,'$'
+	endlSymbol db 13,10,'$'
+	errorBlockMessage db 13,10,'Something go wrong',13,10,'$'
+	exceptionMessage db 13,10,'Print something',13,10,'$'
+	buffString db '     $'
+	decimalConst dw 10
+	
 .code
-	main:
-    mov ax, @data
-    mov ds, ax
-	
-	call MainProc
 
+PrintString proc
+
+	push ax
 	
-	end_metka:
-	
-	mov ax, 4c00h
+	mov ah,9 
 	int 21h
 	
+	pop ax
 	
-	block_error:
-	mov di, offset error_str
-	call print_str
-	call print_endline
-	jmp end_metka
+	ret
+PrintString endp
+
+RemoveSymbol proc
+
+	push ax 
+	push bx 
+	push cx 
+
+	mov ah, 0AH  
+	mov bh, 0 
+	mov al, ' ' 
+	mov cx, 1 
+	int 10h 
+
+	pop cx 
+	pop bx 
+	pop ax
 	
+	ret 
+RemoveSymbol endp
 
-	MainProc:
+EnterNumber proc
 
-		call input__word
-		
-		jc block_error      
-		
-		call word_to_str
-		mov di, offset buffer2
-		call print_str
-		call print_endline
-		
-		mov di, offset str_div
-		call print_str
-		call print_endline
-		
-		mov bx,ax
-		
-		mov di, offset buffer1
-		call clear
-		mov di, offset buffer2
-		call clear
-		xor di,di	
-		call input__word
-		
-		jc block_error 
-
-		call word_to_str
-		mov di, offset buffer2
-		call print_str
-		call print_endline
-		
-		xor dx,dx
-		xchg ax,bx 
-		div bx 
-		
-		mov di, offset str_rovno
-		call print_str
-		call print_endline
-		
-		mov di, offset buffer1
-		call clear
-		mov di, offset buffer2
-		call clear
-		
-		call word_to_str
-		mov di, offset buffer2
-		call print_str
-		call print_endline
+	push bx
+	push cx
+	push dx
 	
-    ret
+	xor bx,bx
+	xor cx,cx
+	xor ax,ax
+entering:
 	
-	BufClear:
+	mov ah,01h
+	int 21h
+	cmp al,8
+	jle backspaceChar
+	cmp al,13
+	jle enterChar
+	cmp al,'0'
+	jb badChar
+	cmp al,'9'
+	ja badChar
 	
-		push cx
-		mov cx,6 
+	xor ah,ah
+	sub ax,'0'
+	mov cx,ax
+	mov ax,bx
+	xor dx,dx
+	mul decimalConst
+	cmp dx,0
+	jnz errorBlock 
+	add ax,cx
+	jc errorBlock
+	mov bx,ax
+	jmp entering
+	
+backspaceChar:
+	xchg bx,ax 
+	xor dx,dx 
+	div decimalConst
+	xchg bx,ax 
+	call RemoveSymbol
+	jmp entering 
+	
+badChar:
+	mov dl,8 
+	mov ah,02h 
+	int 21h
+	call RemoveSymbol
+	jmp entering
+	
+errorBlock:
+	mov dl,8 
+	mov ah,02h 
+	int 21h
+	xor bx,bx
+	mov dx, offset errorBlockMessage
+	call PrintString
+	jmp entering
+	
+exception:
+	mov dx, offset exceptionMessage
+	call PrintString
+	jmp entering
+	
+enterChar:
+	test bx,bx
+	je exception 
+	mov ax,bx
+	
+	pop dx
+	pop cx
+	pop bx
 		
-		clearing:                
-			mov [di],' '        
-			inc di              
-		loop clearing
-			
-		pop cx
+	ret
+EnterNumber endp
+
+ConvertToStr proc
+	
+	push bx
+	push cx
+	push dx
+
+	xor cx,cx
+	
+convertingFromNumber:
+	xor dx,dx
+	div decimalConst
+	push dx
+	inc cx
+	test ax,ax
+	jnz convertingFromNumber
+	
+convertingToStr:
+	mov ah,02h
+	pop dx
+	add dx,'0'
+	int 21h
+	loop convertingToStr
+	
+	mov dx,offset endlSymbol
+	call PrintString
+	
+	pop dx
+	pop cx
+	pop bx
+
+	ret
+ConvertToStr endp
+
+main:
+
+	mov ax,@data
+	mov ds,ax
 		
-	ret	
-
-
+	call EnterNumber
+	xchg bx,ax
+	;mov bx,ax
+	;call ConvertToStr
+	mov dx, offset divChar 
+	call PrintString
+	call EnterNumber
+	;mov cx,ax
+	;call ConvertToStr
+	;xor ax,ax
+	xchg bx,ax
+	xor dx,dx 
+	;div cx
+	div bx
+	mov dx,offset equalityChar
+	call PrintString
+	call ConvertToStr 
+		
+	mov ax, 4C00h
+	int 21h
+		
 end main
+
+	
+	
