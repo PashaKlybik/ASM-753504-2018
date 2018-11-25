@@ -52,8 +52,7 @@ EnterNumber proc
 	xor bx,bx
 	xor cx,cx
 	xor ax,ax
-entering:
-	
+entering:	
 	mov ah,01h
 	int 21h
 	cmp al,8
@@ -159,17 +158,11 @@ main:
 		
 	call EnterNumber
 	xchg bx,ax
-	;mov bx,ax
-	;call ConvertToStr
 	mov dx, offset divChar 
 	call PrintString
 	call EnterNumber
-	;mov cx,ax
-	;call ConvertToStr
-	;xor ax,ax
 	xchg bx,ax
 	xor dx,dx 
-	;div cx
 	div bx
 	mov dx,offset equalityChar
 	call PrintString
