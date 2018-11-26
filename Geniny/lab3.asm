@@ -7,7 +7,6 @@
 	endlSymbol db 13,10,'$'
 	errorBlockMessage db 13,10,'Something go wrong',13,10,'$'
 	exceptionMessage db 'Print something',13,10,'$'
-	buffString db '     $'
 	decimalConst dw 10
 	
 .code
@@ -52,8 +51,7 @@ EnterNumber proc
 	push si
 	
 	xor si,si
-	xor bx,bx
-	
+	xor bx,bx	
 entering:	
 	mov ah,01h
 	int 21h
@@ -173,8 +171,9 @@ overflowingexception:
 	int 21h
 	
 toExitExceptions:
-	
+
 	pop dx
+	
 	ret
 Exceptions endp
 
@@ -196,6 +195,7 @@ ConvertToStr proc
 	
 continue:
 	xor cx,cx
+	
 convertingFromNumber:
 	xor dx,dx
 	div decimalConst
