@@ -3,11 +3,10 @@
 .data
     
 	divChar db '/',13,10,'$'
-	equalityChar db '= ',13,10,'$'
+	equalityChar db '=',13,10,'$'
 	endlSymbol db 13,10,'$'
 	errorBlockMessage db 13,10,'Something go wrong',13,10,'$'
 	exceptionMessage db 13,10,'Print something',13,10,'$'
-	buffString db '     $'
 	decimalConst dw 10
 	
 .code
@@ -93,9 +92,6 @@ badChar:
 	jmp entering
 	
 errorBlock:
-	mov dl,8 
-	mov ah,02h 
-	int 21h
 	xor bx,bx
 	mov dx, offset errorBlockMessage
 	call PrintString
