@@ -49,7 +49,7 @@ printCharToFile endp
 endl proc
     push ax
 
-    mov al, 0AH
+    mov al, 0ah
     call printCharToFile
     
     pop ax
@@ -113,10 +113,8 @@ printf proc
 
     mov bx, ax
 
-    mov dx, '-'
-    mov ax, dx
+    mov al, '-' 
     call printCharToFile
-
     mov ax, bx
     neg ax
 
@@ -135,7 +133,7 @@ getCharFromFile proc
     push cx
 
     mov bx, [handle]
-    mov ah, 3Fh ; reading from file
+    mov ah, 3fh ; reading from file
     mov dx, offset singlechar ; buffer
     mov cx, 1
     int 21h     
@@ -222,6 +220,7 @@ scanf proc
 
         mov ax, 4c00h
         int 21h
+
     validateRange:
         add si, 32767
         cmp ax, si
@@ -254,7 +253,7 @@ inputArray proc
             call scanf
             mov bx, pt1
             mov word ptr[bx], ax
-            add pt1, 2
+            add pt1, 2 
         loop inputArrayInner
         pop cx
     loop inputArrayOuter
@@ -356,7 +355,6 @@ main:
 
     mov dx, offset inputFileName
     mov ah, 3dh
-
     call openFile
  
     call scanf
@@ -381,7 +379,6 @@ main:
 
     mov dx, offset outputFileName
     mov ah, 3ch
-
     call openFile
 
     lea ax, matrix1
