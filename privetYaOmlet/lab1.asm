@@ -37,7 +37,7 @@ main:
     shr ax, 3
     jmp end
     
-        case1: 
+    case1: 
         mov ax,c
         mov bx,d
         mov cx,b
@@ -48,7 +48,7 @@ main:
         add ax,a
         jmp end
     
-        case2:
+    case2:
         mov ax, a
         mov cx, b
         mov bx, c
