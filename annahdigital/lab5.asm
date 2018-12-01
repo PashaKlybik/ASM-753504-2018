@@ -51,7 +51,7 @@ print PROC    ;for printing the number from ax
     xor cx,cx
     test ax, 1000000000000000b
     jz  processingNumbers
-	call printMinus
+    call printMinus
     neg ax
     processingNumbers:
     xor dx,dx
@@ -183,47 +183,47 @@ newnext:
     cmp di,1
     jnz endit
     neg ax
-endit:	
+endit:    
     pop dx
     pop cx
     pop bx
     RET
 enterNumber endp
 
-countSum proc		;for counting sum of elements in even columns
-	push ax
-	push bx
-	push cx
-	push si
-	
-	mov si,0		;rows
-	processingArrayRows:
-	mov bx,0		;columns
-	processingArrayColumns:
-	cmp bx,columns
-	jae endProcessingColumns
-	xor dx,dx
-	mov cx,4
-	mov ax,bx
-	div cx
-	cmp dx,0
-	jz increaseColumnCount
-	mov dx,array[si][bx]
-	add sum,dx
-	increaseColumnCount:
-	add bx,2
-	jmp processingArrayColumns
-	endProcessingColumns:
-	add si,columns
-	cmp si,rows
-	jae endProcessingRows
-	jmp processingArrayRows
-	endProcessingRows:
-	pop si
-	pop cx
-	pop bx
-	pop ax
-	ret
+countSum proc        ;for counting sum of elements in even columns
+    push ax
+    push bx
+    push cx
+    push si
+    
+    mov si,0        ;rows
+    processingArrayRows:
+    mov bx,0        ;columns
+    processingArrayColumns:
+    cmp bx,columns
+    jae endProcessingColumns
+    xor dx,dx
+    mov cx,4
+    mov ax,bx
+    div cx
+    cmp dx,0
+    jz increaseColumnCount
+    mov dx,array[si][bx]
+    add sum,dx
+    increaseColumnCount:
+    add bx,2
+    jmp processingArrayColumns
+    endProcessingColumns:
+    add si,columns
+    cmp si,rows
+    jae endProcessingRows
+    jmp processingArrayRows
+    endProcessingRows:
+    pop si
+    pop cx
+    pop bx
+    pop ax
+    ret
 countSum endp
 
 printMessage PROC
@@ -237,64 +237,64 @@ printMessage endp
 main:
     mov ax, @data
     mov ds, ax
-	
-	mov dx,offset enterRowsMessage		;entering the number of the rows
-	call printMessage
-	call enterNumber
-	mov rows,ax
-	cmp ax,0
-	jz errorInArrayInput
-	test ax, 1000000000000000b
-    jnz errorInArrayInput	
-	mov dx,offset enterColumnsMessage		;entering the number of the columns
-	call printMessage
-	call enterNumber
-	mov columns,ax
-	cmp ax,0
-	jz errorInArrayInput
-	test ax, 1000000000000000b
+    
+    mov dx,offset enterRowsMessage        ;entering the number of the rows
+    call printMessage
+    call enterNumber
+    mov rows,ax
+    cmp ax,0
+    jz errorInArrayInput
+    test ax, 1000000000000000b
+    jnz errorInArrayInput    
+    mov dx,offset enterColumnsMessage        ;entering the number of the columns
+    call printMessage
+    call enterNumber
+    mov columns,ax
+    cmp ax,0
+    jz errorInArrayInput
+    test ax, 1000000000000000b
     jnz errorInArrayInput
-	
-	mov cx,2
-	mov ax, columns
-	mul cx
-	mov columns,ax
-	mov ax,rows
-	mul columns
-	mov rows,ax
-	xor si,si
-	xor bx,bx
-	continueEnteringElements:
-	cmp si,rows
-	jz toTheSumCounting
-	cmp bx,columns
-	jz encreaseCurrentRowNumber
-	mov dx,offset enterArrayElement
-	call printMessage
-	call enterNumber
-	mov array[si][bx],ax
-	add bx,2
-	jmp continueEnteringElements
-	encreaseCurrentRowNumber:
-	add si,columns
-	xor bx,bx
-	jmp continueEnteringElements	
-	
-	toTheSumCounting:
-	call countSum		;counting sum
-	mov dx,offset resultMessage
-	call printMessage
-	mov ax,sum
-	call print			;printing sum
-	jmp exitFinally
+    
+    mov cx,2
+    mov ax, columns
+    mul cx
+    mov columns,ax
+    mov ax,rows
+    mul columns
+    mov rows,ax
+    xor si,si
+    xor bx,bx
+    continueEnteringElements:
+    cmp si,rows
+    jz toTheSumCounting
+    cmp bx,columns
+    jz encreaseCurrentRowNumber
+    mov dx,offset enterArrayElement
+    call printMessage
+    call enterNumber
+    mov array[si][bx],ax
+    add bx,2
+    jmp continueEnteringElements
+    encreaseCurrentRowNumber:
+    add si,columns
+    xor bx,bx
+    jmp continueEnteringElements    
+    
+    toTheSumCounting:
+    call countSum        ;counting sum
+    mov dx,offset resultMessage
+    call printMessage
+    mov ax,sum
+    call print            ;printing sum
+    jmp exitFinally
 
-	errorInArrayInput:
-	mov dx,offset enteringSizeErrorMessage
-	call printMessage
-	
-	exitFinally:
+    errorInArrayInput:
+    mov dx,offset enteringSizeErrorMessage
+    call printMessage
+    
+    exitFinally:
     mov dx,offset blankMessage
-	call printMessage
+    call printMessage
     mov ax, 4c00h
     int 21h
 end main
