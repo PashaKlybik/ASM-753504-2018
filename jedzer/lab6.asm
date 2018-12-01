@@ -24,9 +24,9 @@
 
 CSEG segment 
 assume cs:CSEG, ds:CSEG, es:CSEG, ss:CSEG 
-org        80h            ; по смещению 80h от начала PSP находятся:
-    cmdLength         db     ?       ; длина командной строки
-    cmdLine           db     ?       ; и сама командная строка
+org 80h            ; по смещению 80h от начала PSP находятся:
+    cmdLength db ?       ; длина командной строки
+    cmdLine db ?       ; и сама командная строка
 org 100h 
 Start: 
 jmp Init 
@@ -37,41 +37,41 @@ Int_21h_proc proc
         jmp dword ptr cs:[Int_21h_vect] 
     Ok_09: 
         push dx 
-        push 	di
-        push 	si
-        push	es
+        push di
+        push si
+        push es
 
-        push	ds
-        pop 	es
+        push ds
+        pop es
         mov IsActive, 1
 
-        mov		di, dx
-        mov 	si, dx
+        mov	di, dx
+        mov si, dx
         Loopy:
             lodsb
-            cmp 	al, '$'
-            je 		Finish
-            cmp 	al, 'a'
-            jl 		Next
-            cmp		al, 'z'
-            jg		Ignore
-            sub		al, 20h
-            jmp 	Ignore
+            cmp al, '$'
+            je Finish
+            cmp al, 'a'
+            jl Next
+            cmp	al, 'z'
+            jg Ignore
+            sub	al, 20h
+            jmp Ignore
             Next:
-                cmp 	al, 'A'
-                jl		Ignore
-                cmp 	al, 'Z'
-                jg		Ignore
-                add 	al, 20h
+                cmp al, 'A'
+                jl Ignore
+                cmp	al, 'Z'
+                jg Ignore
+                add	al, 20h
             Ignore:
                 stosb
                 jmp Loopy
         Finish:
         pushf                 
         call dword ptr cs:[Int_21h_vect] 
-        pop 	es
-        pop 	si
-        pop 	di
+        pop es
+        pop si
+        pop di
         pop dx                
     iret                  
     
@@ -80,34 +80,12 @@ int_21h_proc endp
 
  
 Int_40h_proc proc 
-    cmp ah, 1              
-    je Ok_01 
     cmp ah, 2
     je Ok_02
-    
     jmp dword ptr cs:[Int_40h_vect] 
-    
-    Ok_01: 
-        push dx 
-        push 	di
-        push 	si
-        push	es
-
-            mov ax,2540h 
-            mov dx, word ptr Int_40h_vect
-            int 21h 
-
-        pop 	es
-        pop 	si
-        pop 	di
-        pop dx                
-        iret  
-
     Ok_02: 
         mov al, 1
         iret   
-    
-    
 int_40h_proc endp
 
 int_40h_empty proc
@@ -125,8 +103,6 @@ msgUninstalled db 'SUCCESS: Uninstalled',0Dh,0Ah,'$'
 msgInstalled db 'SUCCESS: Installed',0Dh,0Ah,'$'
 
 Init: 
-    
-
     cmp byte ptr cmdLength, 0
     je ZeroArgs
     cmp byte ptr cmdLength, 3
@@ -146,9 +122,6 @@ Init:
         jmp MessageAndExit
 
         ReturnPrev:
-            mov ah, 1
-            int 40h
-
             mov ah,35h 
             mov al,40h 
             int 21h 
@@ -178,9 +151,6 @@ Init:
             lea dx, Init 
             int 27h 
 
-
-
-
     ZeroArgs:
         xor al, al
         mov ah, 2
@@ -193,11 +163,8 @@ Init:
     CmdError:
         lea dx, msgCmdArgsErr
         jmp MessageAndExit
-
-
+    
     Install:
-        
-
         mov ah,35h 
         mov al,21h 
         int 21h 
@@ -232,8 +199,6 @@ Init:
         int 21h
         mov ax, 4c00h
         int 21h
-
-
 
     CSEG ends 
 end Start 
