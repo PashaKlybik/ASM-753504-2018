@@ -26,7 +26,7 @@ WCHAR szTitle[MAX_LOADSTRING];                  // Текст строки за�
 WCHAR szWindowClass[MAX_LOADSTRING];            // имя класса главного окна
 
 vector<pair<int, pair<int, int>>> points;
-int drawFlag = 0;
+int drawFlag = 1;
 
 // Отправить объявления функций, включенных в этот модуль кода:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -116,7 +116,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 	HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
-	HWND hHouseButton = CreateWindow(_T("BUTTON"), _T("LOVE"), WS_CHILD | WS_VISIBLE, 1390, 510, 130, 50, hWnd, (HMENU)IDM_HOUSERBUTTON, hInst, 0);
 	HWND hClearButton = CreateWindow(_T("BUTTON"), _T("CLEAR"), WS_CHILD | WS_VISIBLE, 1390, 720, 130, 50, hWnd, (HMENU)IDM_CLEARBUTTON, hInst, 0);
 
 	if (!hWnd)
@@ -149,9 +148,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		int wmId = LOWORD(wParam);
 		switch (wmId)
 		{
-		case IDM_HOUSERBUTTON:
-			drawFlag = 1;
-			break;
 		case IDM_CLEARBUTTON:
 			points.clear();
 			InvalidateRect(hWnd, NULL, TRUE);
