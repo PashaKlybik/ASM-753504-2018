@@ -1,11 +1,9 @@
-;CSEG segment
-;assume cs:CSEG, es:CSEG, ds:CSEG, ss:CSEG
 .model small
 .stack 256
 
 .data
-	buffer1 db '      $'
-	buffer2 db '      $'
+	buffer1 db '       $'
+	buffer2 db '       $'
 	endline db 13,10,'$'
 
 .code
@@ -13,6 +11,7 @@ Begin:
 	mov ax, @data
     mov ds, ax
 
+IllegalInput:
 	call InputNumber
 	call FunctionOfOutput
 	push ax
@@ -20,7 +19,10 @@ Begin:
 	call FunctionOfOutput
 	mov bx,ax
 	pop ax
+	cmp bx,0
+	jz IllegalInput
 	xor dx,dx
+	cwd										;расширение делимого со знаком ax -> dx:ax
 	idiv bx
 	call FunctionOfOutput
 
@@ -171,7 +173,7 @@ IntoTheStack:
 
 OutputWithSign:
 	push ax
-	mov di, offset buffer2
+	mov di,offset buffer2
 	test ax,ax
 	jns OutputWithoutSign
 	mov byte ptr[di],'-'
@@ -187,6 +189,7 @@ OutputWithoutSign:
 ClearBuffer:
 	push cx
 	mov cx,7
+	lea dx,[buffer2]
 Clear:
 	mov byte ptr[di],' '
 	inc di
@@ -194,37 +197,4 @@ Clear:
 	pop cx
 	ret
 
-;CSEG ends
 end Begin
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
