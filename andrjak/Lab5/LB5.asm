@@ -2,23 +2,24 @@
 .stack 256
 .data
     arraySize dw ?
-	messageEnterA db 'Enter the number with which you will compare the elements of the matrix:$'
-	messageEnterN db 'Enter the number of lines:$'
-	messageEnterM db 'Enter the number of columns:$'
+    messageEnterA db 'Enter the number with which you will compare the elements of the matrix:$'
+    messageEnterN db 'Enter the number of lines:$'
+    messageEnterM db 'Enter the number of columns:$'
     numberSystem dw 10
     errorStr db 'Error!$'
-	spaceChar db '  ','$'
+    spaceChar db '  ','$'
     outputBuffer db '       ','$'
     inputFile db "input.txt", 0
-    outputFile db "output.txt", 0
     errorStrZero db 'Number can not start from zero!',13, 10,'$'
     errorStrOverflow db 'Number is very large!',13, 10,'$'
     errorStrInvalidSymbol db 'You entered a wrong symbol!',13, 10,'$'
-	incorrectEntryMessage db 'Not possible parameters or array size too large!',13, 10,'$'
-	A dw ?
-	strLength dw ?
-	endLine db 13, 10, '$'
-	array dw 5000 dup(0)
+    incorrectEntryMessage db 'Not possible parameters or array size too large!',13, 10,'$'
+    A dw ?
+    strLength dw ?
+    endLine db 13, 10, '$'
+    array dw 5000 dup(0)
+    buffer db ?
+    handle dw ? 
 .code
 
 ;Процедура для очистки экрана при запуске программы 
@@ -74,14 +75,14 @@ remove PROC       ;Процедура для удаления сивола
 
     mov ah, 0AH   ;Запись символа на том месте куда указывает курсор
     mov bh, 0
-	mov al, ' '   ;Сивол который будет выводится 
+    mov al, ' '   ;Сивол который будет выводится 
     mov cx, 1     ;Сколько сиволов записать 
     int 10h       
 
     pop cx
     pop bx
     pop ax
-    ret 
+ret 
 remove ENDP
 
 ;Процедура преобразования слова в строку в десятичном виде (со знаком)
@@ -89,8 +90,8 @@ remove ENDP
 ; DI - буфер для строки (6 символов).
 signWordToStr PROC
     push ax
-	push di 
-	mov di, offset outputBuffer
+    push di 
+    mov di, offset outputBuffer
     test ax,ax              ;Проверка знака AX
     jns notSign      		;Если >= 0, преобразуем как беззнаковое
     mov [di],'-'            ;Добавление знака в начало строки
@@ -98,7 +99,7 @@ signWordToStr PROC
     neg ax                  ;Изменение знака значения AX
     notSign:
     call wordToStr          ;Преобразование беззнакового значения
-	pop di
+    pop di
     pop ax
 ret
 signWordToStr ENDP
@@ -128,21 +129,19 @@ wordEnter PROC          ;Возврат :ax = число введённое с �
   push dx
   push di
   push si
-  
   xor ax,ax
   xor bx,bx                    ;Очищаем bx для хранения временных данных 
   xor cx,cx
   xor di,di
   xor dx,dx 
   xor si,si                    ;Храним зак 
-  
   jmp iterate  
 	
 signDelete:
     cmp si,0
-	je positive
-	mov si,0
-	jmp positive
+    je positive
+    mov si,0
+    jmp positive
   
 iterate:                       ;Часть кода которая повторяется до тех пор 
     xor di,di                  ;пока не будет введён Enter или не переполнится
@@ -150,10 +149,10 @@ iterate:                       ;Часть кода которая повтор�
     int 21h                       
     cmp  al,8                  ;Сравнение введённого символа с Backspace
     je bckspace
-	cmp al,13                  ;Сравнение введённого символа с Enter
+    cmp al,13                  ;Сравнение введённого символа с Enter
     je enterr  
-	cmp al,32                  ;Сравнение с пробелом
-	je enterr
+    cmp al,32                  ;Сравнение с пробелом
+    je enterr
     cmp al,27                  ;Сравнение введённого символа с Escape
     je escape
     cmp al,'-'
@@ -181,19 +180,19 @@ back:
 
 enterr:
     test bx,bx
-	jne exceptionNull          ;Исключение если до этого небыл введён ни один символ
-	xor ax,ax                  ;Вводится ноль 
-	jmp endWordEnter
+    jne exceptionNull          ;Исключение если до этого небыл введён ни один символ
+    xor ax,ax                  ;Вводится ноль 
+    jmp endWordEnter
   exceptionNull:
     mov ax,bx
     cmp si,1                   ;Если число положительное переходим к концу ввода 
     jne endWordEnter
     neg ax                     ;Превращаем регистр ax в отрицательное число 
-	jmp endWordEnter           ;Переход к концу выполнения если всё правильно 
+    jmp endWordEnter           ;Переход к концу выполнения если всё правильно 
 
 bckspace:
     test bx,bx
-	je signDelete
+    je signDelete
   positive:
     xchg bx,ax
     xor dx,dx
@@ -204,7 +203,7 @@ bckspace:
 	
 escape:
     xor bx,bx
-	xor si,si
+    xor si,si
     mov cx,7
   cleaning:
     mov dl,8
@@ -219,12 +218,12 @@ escape:
     jmp iterate
 	
 minus:                            ;Если был введён минус 
-	cmp bx,0                      ;Проверяем на какой позиции пишется число 
-	jne exceptionInvalidSymbol
-	cmp si,0
-	jne exceptionInvalidSymbol
+    cmp bx,0                      ;Проверяем на какой позиции пишется число 
+    jne exceptionInvalidSymbol
+    cmp si,0
+    jne exceptionInvalidSymbol
     mov si,1
-	jmp iterate                   ;Продолжаем ввод числа 
+    jmp iterate                   ;Продолжаем ввод числа 
 
 negative:
     cmp ax,32768                        ;Граница отрицательного числа 
@@ -235,7 +234,7 @@ exceptionInvalidSymbol:
     mov di,1
     jmp escape
   InvalidSymbol:
-	mov dx, offset errorStrInvalidSymbol
+    mov dx, offset errorStrInvalidSymbol
     call printStr
     jmp iterate
 	
@@ -264,45 +263,45 @@ inputArray PROC                ;Процедура для ввода Масси�
   push di
   push si
   comback:
-	call startCleaning
-	lea dx,messageEnterA
-	call printStr
-	call wordEnter              ;Ввод А с которым будем сравнивать 
-	mov A,ax 
-	lea dx,messageEnterN 
-	call printStr
-	call wordEnter              
-	cmp ax,0                    ;Проверка на не адекватного пользователя (размер массива)
-	jle wrongArraySize          ;Размерности массива
-	mov bx,ax 
-	lea dx,messageEnterM
-	call printStr	
-	call wordEnter
+    call startCleaning
+    lea dx,messageEnterA
+    call printStr
+    call wordEnter              ;Ввод А с которым будем сравнивать 
+    mov A,ax 
+    lea dx,messageEnterN 
+    call printStr
+    call wordEnter              
+    cmp ax,0                    ;Проверка на не адекватного пользователя (размер массива)
+    jle wrongArraySize          ;Размерности массива
+    mov bx,ax 
+    lea dx,messageEnterM
+    call printStr	
+    call wordEnter
     cmp ax,0                    ;Если в массиве больше 5000 слов 
     jle wrongArraySize
-	mov strLength,ax            ;Количество элементов в строке 
-    
-	xor dx,dx                   ;Было бы актуально для массивов больших размеров 
-	mul bx                      ;Размер массива 
-	cmp ax,5000                 ;Если в массиве слишком много символов 
-	jg wrongArraySize           ;Мне кажется 5000 чисел вполне достаточно 
-	mov arraySize,ax            ;Передаём размер массива 
-	
-	xor cx,cx                   ;Очищаем cx чтобы использовать его в качестве счётчика
-	mov cx,ax                   ;Передаём размер массива
-	lea di,array                ;Передаём адрес массива 
+    mov strLength,ax            ;Количество элементов в строке 
+  
+    xor dx,dx                   ;Было бы актуально для массивов больших размеров 
+    mul bx                      ;Размер массива 
+    cmp ax,5000                 ;Если в массиве слишком много символов 
+    jg wrongArraySize           ;Мне кажется 5000 чисел вполне достаточно 
+    mov arraySize,ax            ;Передаём размер массива 
+
+    xor cx,cx                   ;Очищаем cx чтобы использовать его в качестве счётчика
+    mov cx,ax                   ;Передаём размер массива
+    lea di,array                ;Передаём адрес массива 
   inputForArray:                ;Цикл ввода 
     call wordEnter
-	mov [di],ax             ;Передача в di введённого числа
-	inc di	
-	inc di 
+    mov [di],ax             ;Передача в di введённого числа
+    inc di	
+    inc di 
     loop inputForArray
-	jmp endInputArray
+    jmp endInputArray
  
   wrongArraySize:
-	lea dx,incorrectEntryMessage ;Собщение в случае не корректного ввода 
-	call printStr
-	jmp comback                  ;Повторение ввода в случае не корректных параметров 
+    lea dx,incorrectEntryMessage ;Собщение в случае не корректного ввода 
+    call printStr
+    jmp comback                  ;Повторение ввода в случае не корректных параметров 
   endInputArray:
   pop si
   pop di
@@ -314,27 +313,32 @@ ret
 inputArray ENDP
 
 outputArray PROC
+push ax                      
+push bx
+push cx
+push dx
+push di
     lea di,array
-	mov bx,[strLength]             
-	mov cx,[arraySize]             
+    mov bx,[strLength]             
+    mov cx,[arraySize]             
   displaing:
     xor ax,ax 
     mov ax,[di] 	
   next:
     call signWordToStr
-	lea dx,outputBuffer
-	call printStr
-	lea dx,spaceChar
-	call printStr
-	push di
-	lea di,outputBuffer
-	call clear
-	pop di
-	inc di
-	inc di
-	dec bx 
-	test bx,bx 
-	je printEndString
+    lea dx,outputBuffer
+    call printStr
+    lea dx,spaceChar
+    call printStr
+    push di
+    lea di,outputBuffer
+    call clear
+    pop di
+    inc di              ;Инкрементируем 2 раза так как в масив записываем word
+    inc di
+    dec bx 
+    test bx,bx 
+    je printEndString
     loop displaing
 	
   printEndString:
@@ -342,11 +346,16 @@ outputArray PROC
     call printStr
     mov bx,[strLength]
     dec cx	
-	test cx,cx 
-	je endOutputArray
+    test cx,cx 
+    je endOutputArray
     jmp displaing
 	
   endOutputArray:
+pop di
+pop dx
+pop cx
+pop bx
+pop ax
 ret
 outputArray ENDP
 
@@ -355,25 +364,165 @@ lea di,array
 mov cx,[arraySize]
   performance:
     mov ax,[A]
-	mov bx,[di]
-	inc di
-	inc di
+    mov bx,[di]
+    inc di
+    inc di
     cmp bx,ax
-	jbe performanceYet                       ;Меньше или равно 	
+    jbe performanceYet                       ;Меньше или равно 	
     mov [di-2],0
   performanceYet:
-	loop performance
+    loop performance
 ret
 task ENDP
+
+FileOpen PROC               ;Вход = dx адрес сторки (Имя файла)
+push cx
+    mov ah,3Dh              ;Функция DOS 3Dh (открытие файла)
+    xor al,al               ;Режим открытия - только чтение
+    xor cx,cx               ;Нет атрибутов - обычный файл
+    int 21h                 ;Прерывание 
+    mov [handle],ax         ;Сохранение дискриптора 
+pop cx
+ret	
+FileOpen ENDP            
+
+StrToWord PROC ;выход: ax = введённое слово ,вход: di = буфер строки
+push bx
+push cx
+push dx
+push di
+push si
+  lea di,outputBuffer
+  mov cx,7
+  mov bx,2
+  xor ax,ax
+  xor dx,dx
+  cmp [di],'-'
+  jne notSignWord
+    xor bx,bx
+    inc di
+  notSignWord:
+    mov si,[di]
+    sub si,'0'                 ;Превращение символа числа ASCII в число в переменной 
+    cmp si,9 
+    ja EndStrToWord
+    mul numberSystem
+    add ax,si
+    inc di
+  loop notSignWord
+    test bx,bx
+    jne EndStrToWord
+    neg ax
+  EndStrToWord:
+    lea di,outputBuffer
+    call clear
+pop si
+pop di
+pop dx
+pop cx
+pop bx
+ret
+StrToWord ENDP
+
+WordFromFile PROC         ;Вход handle Дискриптор файла
+  push bx                 ;Выход ax = число из файла 
+  push cx                 ;Работает как посимвольный ввод
+  push dx                 ;Результат оказывается в буфере 
+  push di                 ;После чего при помощи функции перевода 
+    lea di,outputBuffer   ;Буфера в слово получаем результат 
+    mov cx,7
+  backFileWord:
+    mov bx,[handle]
+    xor ax,ax
+    mov ah,3Fh
+    lea dx,buffer
+    push cx
+    mov cx,1 
+    int 21h
+    pop cx
+    cmp [buffer],' '
+    jnz nextFileWord	
+    lea di,outputBuffer
+    call StrToWord
+    jmp endFileWord
+  nextFileWord: 
+    xor ax,ax
+    mov al,[buffer]
+    mov [di],ax
+    inc di
+    loop backFileWord
+  endFileWord:
+  pop di
+  pop dx
+  pop cx
+  pop bx
+ret
+WordFromFile ENDP
+
+ArrayFromFile PROC      ;Получение массива из файла 
+  push ax                      
+  push bx
+  push cx
+  push dx
+  push di
+  push si
+  combackFile:
+    call startCleaning
+    call WordFromFile              ;Ввод А с которым будем сравнивать 
+    mov A,ax 
+    call WordFromFile              
+    cmp ax,0                    ;Проверка на не адекватного пользователя (размер массива)
+    jle wrongFileArraySize          ;Размерности массива
+    mov bx,ax 	
+    call WordFromFile
+    cmp ax,0                    ;Если в массиве больше 5000 слов 
+    jle wrongFileArraySize
+    mov strLength,ax            ;Количество элементов в строке 
+    
+    xor dx,dx                   ;Было бы актуально для массивов больших размеров 
+    mul bx                      ;Размер массива 
+    cmp ax,5000                 ;Если в массиве слишком много символов 
+    jg wrongFileArraySize       ;Мне кажется 5000 чисел вполне достаточно 
+    mov arraySize,ax            ;Передаём размер массива 
+	
+    xor cx,cx                   ;Очищаем cx чтобы использовать его в качестве счётчика
+    mov cx,ax                   ;Передаём размер массива
+    lea di,array                ;Передаём адрес массива 
+  inputForFileArray:                ;Цикл ввода 
+    call WordFromFile
+    mov [di],ax             ;Передача в di введённого числа
+    inc di	
+    inc di 
+    loop inputForFileArray
+    jmp endFileInputArray
+ 
+  wrongFileArraySize:
+    lea dx,incorrectEntryMessage ;Собщение в случае не корректного ввода 
+    call printStr
+    jmp combackFile                  ;Повторение ввода в случае не корректных параметров 
+  endFileInputArray:
+  pop si
+  pop di
+  pop dx
+  pop cx
+  pop bx
+  pop ax
+ret
+ArrayFromFile ENDP
 
 main:
     mov ax, @data
     mov ds, ax  
     mov es, ax	
-	
-	call inputArray
-	call task
-	call outputArray
+
+    lea dx,inputFile
+    call FileOpen
+    call ArrayFromFile                ;Ввести массив из файла
+    call task
+    call outputArray
+    ;call inputArray
+    ;call task                        ;Ввести массив с клавиатуры 
+    ;call outputArray
 	
     mov ax, 4c00h
     int 21h	
