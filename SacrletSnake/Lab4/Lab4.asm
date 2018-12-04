@@ -25,9 +25,9 @@
 	int 21h
 
 Delete: 
-	push cx
 	push bx
 	push ax
+	push cx
 	xor bx,bx
 	mov si,dx
 	mov di,dx
@@ -48,9 +48,9 @@ Peer:
 	jmp CheckOfSymbol
 EndStr:
 	mov byte ptr [di],'$'
+	pop cx
 	pop ax
 	pop bx
-	pop cx
 	ret
 
 NextStr:
