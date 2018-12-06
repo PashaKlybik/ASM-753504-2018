@@ -4,6 +4,8 @@
 .data
 	buffer1 db '       $'
 	buffer2 db '       $'
+	illegalstr db 13,10,'Illegal input$'
+	tryagain db 13,10,'Try again!$'
 	endline db 13,10,'$'
 
 .code
@@ -11,16 +13,18 @@ Begin:
 	mov ax, @data
     mov ds, ax
 
-IllegalInput:
+IllegalInputNull:
 	call InputNumber
 	call FunctionOfOutput
+	cmp ax,0
+	jz IllegalInputNull
 	push ax
 	call InputNumber
 	call FunctionOfOutput
 	mov bx,ax
 	pop ax
 	cmp bx,0
-	jz IllegalInput
+	jz IllegalInputNull
 	xor dx,dx
 	cwd										;расширение делимого со знаком ax -> dx:ax
 	idiv bx
@@ -28,6 +32,17 @@ IllegalInput:
 
 	mov ax, 4c00h
 	int 21h
+
+IllegalInput:
+	push dx
+	xor dx,dx
+	mov di,offset illegalstr
+	call PrintString
+	call EndStr
+	mov di,offset tryagain
+	call PrintString
+	pop di
+	ret
 
 FunctionOfOutput:
 	call ClearBuffer
@@ -87,6 +102,7 @@ Transform:
 	jmp StdExit
 StdError:
 	xor ax,ax
+	call IllegalInput
 	stc
 StdExit:
 	pop di
@@ -124,6 +140,7 @@ StdEnd:
 	jmp StdWithSignExit
 StdWithSignError:
 	xor ax,ax
+	call IllegalInput 
 	stc
 StdWithSignExit:
 	pop dx
