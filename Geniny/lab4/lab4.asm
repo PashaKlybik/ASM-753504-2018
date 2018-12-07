@@ -71,18 +71,18 @@ main:
       jne notEqualSymbol
 	  
       equalSymbol:
-	dec cx
-	dec di 
+        dec cx
+        dec di 
       jmp comparing
 	
       notEqualSymbol:
-	dec cx
-	xor ax,ax
-	dec si
-	lods firstStr
-	xor ah,ah
-	stos secondStr
-	dec di
+        dec cx
+        xor ax,ax
+        dec si
+        lods firstStr
+        xor ah,ah
+        stos secondStr
+        dec di
       jmp comparing
       
   toExit:
