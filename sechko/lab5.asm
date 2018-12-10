@@ -1,35 +1,18 @@
 .model small
 .stack 256
 .data
-    inFile db "element.txt", 0
+    inFile db "input.txt", 0
+    outFile db "output.txt", 0
     inArray1 dw 10*10 dup (?)
     inArray2 dw 10*10 dup (?)
     finArray dw 10*10 dup (?)
     buffer db ?
-    finiteFile db "finite.txt", 0
+    row dw ?
+    column dw ?
     stock dw ?
-    rows dw ?
-    columns dw ?
 .code
 
-proc writeChar      ;символ в текст
-    push ax 
-    push bx
-    push cx
-    
-    mov cx, 1
-    mov bx, stock
-    mov buffer, dl
-    lea dx, buffer
-    mov ah, 40h
-    int 21h
-
-    pop cx
-    pop bx
-    pop ax
-    ret
-endp
-proc output
+proc Out ;
     push ax
     push bx
     push cx
@@ -73,6 +56,25 @@ outChar:
     ret
 endp
 
+proc writeChar    ; символ в текст 
+    push ax
+    push bx
+    push cx
+    
+    mov cx, 1
+    mov bx, stock
+    mov buffer, dl
+    lea dx, buffer
+    mov ah, 40h
+    int 21h
+
+    pop cx
+    pop bx
+    pop ax
+    ret
+endp
+
+
 proc readChar     ; считывает символ
     push ax
     push bx
@@ -103,7 +105,7 @@ notLast:
     ret
 endp
 
-proc input ; строка-число
+proc In           ; строка=число 
     push dx
     push bx
     push cx
@@ -130,38 +132,38 @@ pass:
     
 endOfLine:     
     test ch, ch
-    jz endInput
+    jz endIn
     neg ax
-endInput:
+endIn:
     pop cx
     pop bx
     pop dx
     ret
 endp
 
-proc readArray    ; читает массив
-    push ax    
+proc readArray     ; читает массив
+    push ax
     push dx
     push cx
     
     mov di, dx
-    call input
-    mov rows, ax
+    call In
+    mov row, ax
     mov cx, ax
-    call input
-    mov columns, ax
+    call In
+    mov column, ax
     mov bx, ax
     call readChar
     
 toArray:
-    call input
+    call In
     mov [di], ax
     add di, 2
     dec bx
     test bx, bx
     jnz toArray
-    mov bx, columns
-    call input
+    mov bx, column
+    call In
     loop toArray
     
     pop cx
@@ -170,21 +172,21 @@ toArray:
     ret
 endp
 
-proc compare       ; расчеты 
+proc compare        ; расчет
     push ax
     push bx
     push dx
     push cx
     
     mov bx, dx
-    mov ax, columns
-    mul rows
+    mov ax, column
+    mul row
     mov cx, ax
-
+    
     lea di, inArray1
     lea si, inArray2
 
-toOutArray:   
+tofinArray:   
     mov ax, [di]
     mul word ptr[si]    
     mov word ptr[bx], ax
@@ -192,7 +194,7 @@ toOutArray:
     add bx, 2
     add si, 2
     add di, 2
-    loop toOutArray
+    loop tofinArray
     
     pop cx
     pop dx
@@ -201,23 +203,23 @@ toOutArray:
     ret
 endp
 
-proc writeArray    ; запись массива
+proc writeArray      ; запись массива
     push ax
     push dx
     push cx
     
     mov di, dx
-    mov cx, rows
-    mov bx, columns
+    mov cx, row
+    mov bx, column
     
 fromArray:
     mov ax, [di]
-    call output 
+    call Out 
     add di, 2
     dec bx
     test bx, bx
     jnz fromArray
-    mov bx, columns
+    mov bx, column
     mov dl, 10
     call writeChar
     loop fromArray
@@ -228,7 +230,7 @@ fromArray:
     ret
 endp
 
-proc openFile
+proc openFile       ; открытие файла 
     push ax
     
     mov al, 2
@@ -241,7 +243,7 @@ proc openFile
     ret
 endp
 
-proc closeFile
+proc closeFile      ; закрытие файла
     push ax
     push bx
     
@@ -270,7 +272,7 @@ main:
     
     lea dx, finArray
     call compare
-    lea dx, finiteFile
+    lea dx, outFile
     call openFile
     lea dx, finArray
     call writeArray
