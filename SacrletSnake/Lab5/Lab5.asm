@@ -27,21 +27,23 @@ Begin:
 	mov ax, 4c00h
 	int 21h
 
-FunctionOfOutput:
+FunctionOfOutput proc
 	call ClearBuffer
 	call OutputWithSign
 	call EndStr
 	ret
+FunctionOfOutput endp
 
-InputNumber:
+InputNumber proc
 	push dx
 	mov al,7
 	call InputString
 	call StringToNumberWithSign
 	pop dx
-ret
+	ret
+InputNumber endp
 
-InputString:
+InputString proc
 	push cx
 	mov cx,ax
 	mov ah,10
@@ -53,9 +55,10 @@ InputString:
 	add dx,2
 	mov ah,ch
 	pop cx
-ret
+	ret
+InputString endp
 
-StringToNumberWithoutSign:
+StringToNumberWithoutSign proc
 	push cx
 	push dx
 	push bx
@@ -92,9 +95,10 @@ StdExit:
 	pop bx
 	pop dx
 	pop cx
-	ret		
+	ret
+StringToNumberWithoutSign endp
 
-StringToNumberWithSign:
+StringToNumberWithSign proc
 	push bx
 	push dx
 	test al,al
@@ -135,22 +139,25 @@ PrintString:
 	int 21h
 	pop ax
 	ret
+StringToNumberWithSign endp
 
-EndStr:
+EndStr proc
 	push di
 	mov di,offset endline
 	call PrintString
 	pop di
 	ret
+EndStr endp
 
-SpaceStr:
+SpaceStr proc
 	push di
 	mov di,offset spaceStr
 	call PrintString
 	pop di
 	ret
+SpaceStr endp
 
-OutputString:
+OutputString proc
 	push ax
 	push cx
 	push bx
@@ -175,8 +182,9 @@ IntoTheStack:
 	pop cx
 	pop ax
 	ret
+OutputString endp
 
-OutputWithSign:
+OutputWithSign proc
 	push ax
 	mov di,offset buffer2
 	test ax,ax
@@ -190,8 +198,9 @@ OutputWithoutSign:
 	call PrintString
 	pop ax
 	ret
+OutputWithSign endp
 
-ClearBuffer:
+ClearBuffer proc
 	push cx
 	mov cx,7
 	lea dx,[buffer2]
@@ -201,13 +210,14 @@ Clear:
 	loop Clear
 	pop cx
 	ret
+ClearBuffer endp
 
-InputArray:
+InputArray proc
 	push cx
 	mov cx,ax
 	push ax
 	mov si,0
-Input—olumnOfArray:
+InputColumnOfArray:
 	push cx
 	mov cx,bx
 	InputStringOfArray:
@@ -221,19 +231,20 @@ Input—olumnOfArray:
 	call EndStr
 	dec cx
 	cmp cx,0
-	jnz Input—olumnOfArray
+	jnz InputColumnOfArray
 	pop ax
 	pop cx	
 	ret
+InputArray endp
 	
-	OutputArray:
+OutputArray proc
 	push cx
 	mov cx,ax
 	push ax
 	mov si,0
 	mov ah,09h
 	lea dx,originalArray
-Output—olumnOfArray:
+OutputColumnOfArray:
 	push cx
 	mov cx,bx
 	OutputStringOfArray:
@@ -249,12 +260,13 @@ Output—olumnOfArray:
 	call EndStr
 	dec cx
 	cmp cx,0
-	jnz Output—olumnOfArray
+	jnz OutputColumnOfArray
 	pop ax
 	pop cx
 	ret
+OutputArray endp
 
-	OutputChangedArray:
+OutputChangedArray proc
 	call EndStr
 	push cx
 	mov cx,ax
@@ -267,7 +279,7 @@ Output—olumnOfArray:
 	mov ah,09h
 	pop ax
 	lea dx,originalArray
-OutputChanged—olumnOfArray:
+OutputChangedColumnOfArray:
 	push cx
 	mov cx,bx
 	OutputChangedStringOfArray:		
@@ -292,9 +304,10 @@ OutputChanged—olumnOfArray:
 	call EndStr
 	dec cx
 	cmp cx,0
-	jnz OutputChanged—olumnOfArray
+	jnz OutputChangedColumnOfArray
 	pop ax
 	pop cx
 	ret
+OutputChangedArray endp
 
 end Begin
