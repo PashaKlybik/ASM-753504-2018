@@ -2,7 +2,7 @@
 .stack 256
 
 .data
-    string db 250, 250 dup('$')
+    string db 200, 200 dup('$')
 
 .code
  Begin:
@@ -24,7 +24,7 @@
 	mov ax,4c00h
 	int 21h
 
-Delete: 
+Delete proc 
 	push bx
 	push ax
 	push cx
@@ -52,8 +52,9 @@ EndStr:
 	pop ax
 	pop bx
 	ret
+Delete endp
 
-NextStr:
+NextStr proc
     push ax
     push dx
     mov ah,02h
@@ -62,5 +63,6 @@ NextStr:
     pop dx
     pop ax
     ret
+NextStr endp
  
 end Begin 
