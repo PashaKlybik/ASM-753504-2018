@@ -12,7 +12,7 @@
     stock dw ?
 .code
 
-proc Out ;
+proc Out         ; запись числа в файл
     push ax
     push bx
     push cx
@@ -75,7 +75,7 @@ proc writeChar    ; символ в текст
 endp
 
 
-proc readChar     ; считывает символ
+proc readChar     ; считывает символ из файла
     push ax
     push bx
     push cx
