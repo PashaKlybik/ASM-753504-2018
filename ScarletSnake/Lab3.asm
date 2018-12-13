@@ -26,7 +26,7 @@ IllegalInputNull:
 	cmp bx,0
 	jz IllegalInputNull
 	xor dx,dx
-	cwd										;расширение делимого со знаком ax -> dx:ax
+	cwd
 	idiv bx
 	call FunctionOfOutput
 
