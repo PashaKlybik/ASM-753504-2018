@@ -33,7 +33,7 @@ IllegalInputNull:
 	mov ax, 4c00h
 	int 21h
 
-IllegalInput:
+IllegalInput proc
 	push dx
 	xor dx,dx
 	mov di,offset illegalstr
@@ -43,22 +43,25 @@ IllegalInput:
 	call PrintString
 	pop di
 	ret
+IllegalInput endp	
 
-FunctionOfOutput:
+FunctionOfOutput proc
 	call ClearBuffer
 	call OutputWithSign
 	call EndStr
 	ret
+FunctionOfOutput endp	
 
-InputNumber:
+InputNumber proc
 	push dx
 	mov al,7
 	call InputString
 	call StringToNumberWithSign
 	pop dx
-ret
+	ret
+InputNumber endp	
 
-InputString:
+InputString proc
 	push cx
 	mov cx,ax
 	mov ah,10
@@ -70,9 +73,9 @@ InputString:
 	add dx,2
 	mov ah,ch
 	pop cx
-ret
+InputString endp
 
-StringToNumberWithoutSign:
+StringToNumberWithoutSign proc
 	push cx
 	push dx
 	push bx
@@ -110,9 +113,10 @@ StdExit:
 	pop bx
 	pop dx
 	pop cx
-	ret		
+	ret
+StringToNumberWithoutSign endp
 
-StringToNumberWithSign:
+StringToNumberWithSign proc
 	push bx
 	push dx
 	test al,al
@@ -146,23 +150,26 @@ StdWithSignExit:
 	pop dx
 	pop bx
 	ret
+StringToNumberWithSign endp
 
-PrintString:
+PrintString proc
 	push ax
 	mov ah,9
 	xchg dx,di
 	int 21h
 	pop ax
 	ret
+PrintString endp
 
-EndStr:
+EndStr proc
 	push di
 	mov di,offset endline
 	call PrintString
 	pop di
 	ret
+EndStr endp
 
-OutputString:
+OutputString proc
 	push ax
 	push cx
 	push bx
@@ -187,8 +194,9 @@ IntoTheStack:
 	pop cx
 	pop ax
 	ret
+OutputString endp
 
-OutputWithSign:
+OutputWithSign proc
 	push ax
 	mov di,offset buffer2
 	test ax,ax
@@ -202,8 +210,9 @@ OutputWithoutSign:
 	call PrintString
 	pop ax
 	ret
+OutputWithSign endp
 
-ClearBuffer:
+ClearBuffer proc
 	push cx
 	mov cx,7
 	lea dx,[buffer2]
@@ -213,5 +222,6 @@ Clear:
 	loop Clear
 	pop cx
 	ret
+ClearBuffer endp
 
 end Begin
