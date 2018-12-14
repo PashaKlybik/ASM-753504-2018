@@ -1,3 +1,4 @@
+;tasm/tasm Lab6 # tasm\tlinc /t Lab6 # Lab6 (Lab6 -d) запуск программы !!!
 CSEG segment           ; начало сегмента
 
 assume cs:CSEG, ds:CSEG, es:CSEG, ss:CSEG 
@@ -71,7 +72,7 @@ Int_40h_empty endp
 Active db 0
 Int_21h_vect dd ?
 Int_40h_vect dd ?
-InstalledStr db 'Already installed!', 13, 10, '$'
+AlreadyInstalledStr db 'Already installed!', 13, 10, '$'
 NotInstalled db 'Not installed!', 13, 10, '$'
 ErrorStr db 'ERROR!', 13, 10, '$'
 DeletedStr db 'DELETED!',13, 10, '$'
@@ -127,15 +128,15 @@ Init:                            ;Процедура установки прер
     int 40h
     cmp al,0
     je Install
-    lea dx,InstalledStr
-    jmp Exit
+    lea dx,AlreadyInstalledStr       ;Так как прерывание уже установленно строка будет выведена
+    jmp Exit                         ;в сучётом нового прерывания
 		
   ErrorProc:
     lea dx, ErrorStr
     jmp Exit
     
   Install:
-    mov ah,35h ; вектор обработчика прерывания
+    mov ah,35h                        ;Вектор обработчика прерывания
     mov al,21h 
     int 21h 
     mov word ptr Int_21h_vect,bx
@@ -164,7 +165,7 @@ Init:                            ;Процедура установки прер
     int 27h 
     
   Exit:
-    mov ah,9
+    mov ah,9          
     int 21h
     mov ax,4c00h
     int 21h
