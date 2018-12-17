@@ -1,22 +1,17 @@
-// ExtraLab.cpp : Определяет точку входа для приложения.
-//
-
 #include "stdafx.h"
 #include "ExtraLab.h"
 
 #define MAX_LOADSTRING 100
 
-// Глобальные переменные:
-HINSTANCE hInst;                                // текущий экземпляр
-WCHAR szTitle[MAX_LOADSTRING];                  // Текст строки заголовка
-WCHAR szWindowClass[MAX_LOADSTRING];            // имя класса главного окна
+HINSTANCE hInst;                               
+WCHAR szTitle[MAX_LOADSTRING];                  
+WCHAR szWindowClass[MAX_LOADSTRING];           
 
-void Paint(HDC, int, int);                        //Функция рисования
-int xCoordinates = 0, yCoordinates = 0;         //Пользовательские Переменные      
+void Paint(HDC, int, int);                       
+int xCoordinates = 0, yCoordinates = 0;              
 bool Mode = false;
 char colorMode = '0';
 
-// Отправить объявления функций, включенных в этот модуль кода:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -29,15 +24,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
-
-	// TODO: разместите код здесь.
-
-	// Инициализация глобальных строк
+	
 	LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDC_EXTRALAB, szWindowClass, MAX_LOADSTRING);
 	MyRegisterClass(hInstance);
 
-	// Выполнить инициализацию приложения:
 	if (!InitInstance(hInstance, nCmdShow))
 	{
 		return FALSE;
@@ -47,7 +38,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	MSG msg;
 
-	// Цикл основного сообщения:
 	while (GetMessage(&msg, nullptr, 0, 0))
 	{
 		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
@@ -60,13 +50,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	return (int)msg.wParam;
 }
 
-
-
-//
-//  ФУНКЦИЯ: MyRegisterClass()
-//
-//  НАЗНАЧЕНИЕ: регистрирует класс окна.
-//
 ATOM MyRegisterClass(HINSTANCE hInstance)
 {
 	WNDCLASSEXW wcex;
@@ -88,19 +71,9 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 	return RegisterClassExW(&wcex);
 }
 
-//
-//   ФУНКЦИЯ: InitInstance(HINSTANCE, int)
-//
-//   НАЗНАЧЕНИЕ: сохраняет обработку экземпляра и создает главное окно.
-//
-//   КОММЕНТАРИИ:
-//
-//        В данной функции дескриптор экземпляра сохраняется в глобальной переменной, а также
-//        создается и выводится на экран главное окно программы.
-//
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-	hInst = hInstance; // Сохранить дескриптор экземпляра в глобальной переменной
+	hInst = hInstance; 
 
 	HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
@@ -116,37 +89,27 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	return TRUE;
 }
 
-//
-//  ФУНКЦИЯ: WndProc(HWND, UINT, WPARAM, LPARAM)
-//
-//  НАЗНАЧЕНИЕ:  обрабатывает сообщения в главном окне.
-//
-//  WM_COMMAND — обработать меню приложения
-//  WM_PAINT — отрисовать главное окно
-//  WM_DESTROY — отправить сообщение о выходе и вернуться
-//
-//
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{
-	case WM_CREATE:                      //Создание кнопки очистки
+	case WM_CREATE:                    
 	{
 		hWnd = CreateWindowEx(NULL, L"BUTTON", L"Clear", WS_CHILD,
-			       350, 10, 250, 50, hWnd, HMENU(100), hInst, NULL); //Дескриптор 100
+			       350, 10, 250, 50, hWnd, HMENU(100), hInst, NULL);
 		ShowWindow(hWnd, SW_SHOWNORMAL);
 
 		break;
 	}
-	case WM_LBUTTONDOWN:                 //Нажатие на левую клавишу мыши 
+	case WM_LBUTTONDOWN:                
 	{
 		Mode = true;
 		xCoordinates = LOWORD(lParam);
 		yCoordinates = HIWORD(lParam);
-		InvalidateRect(hWnd, NULL, false); //Перерисовать окно
+		InvalidateRect(hWnd, NULL, false);
 		break;
 	}
-	case WM_RBUTTONDOWN:                 //Нажатие на правую клавишу мыши 
+	case WM_RBUTTONDOWN:                
 	{
 		Mode = true;
 		xCoordinates = LOWORD(lParam);
@@ -157,10 +120,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_COMMAND:
 	{
 		int wmId = LOWORD(wParam);
-		// Разобрать выбор в меню:
+		// ГђГ Г§Г®ГЎГ°Г ГІГј ГўГ»ГЎГ®Г° Гў Г¬ГҐГ­Гѕ:
 		switch (wmId)
 		{
-		case 100:                                //Обработка сообщения кнопки
+		case 100:                               
 		{
 			Mode = false;
 			InvalidateRect(hWnd, NULL, TRUE);
@@ -194,7 +157,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-// Обработчик сообщений для окна "О программе".
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	UNREFERENCED_PARAMETER(lParam);
@@ -220,7 +182,7 @@ void Paint(HDC hdc, int xCoordinates, int yCoordinates)
 	{
 		HPEN hBlackPen;
 		hBlackPen = CreatePen(PS_SOLID, 2, RGB(0, 0, 0));
-		SelectObject(hdc, hBlackPen);                            //Выбираем нужно перо 
+		SelectObject(hdc, hBlackPen);                          
 		HBRUSH hSmileBrush, hWhiteBrush, hBlackBrush;        
 		hWhiteBrush = CreateSolidBrush(RGB(255, 255, 255));
 		hBlackBrush = CreateSolidBrush(RGB(0, 0, 0));
