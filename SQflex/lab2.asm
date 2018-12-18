@@ -1,4 +1,4 @@
-model small			; модель памяти
+model small                     ; модель памяти
 .stack 100h         ; установка размера стека
 
 .data
@@ -17,80 +17,80 @@ ost dw ?
 cel dw ?
 
 .code
-InputInt proc	;ввод в АX 
+InputInt proc   ;ввод в АX 
 
-	entersymb:
-	MOV AH, 01h
-	INT 21h
-	xor ah, ah
-	CMP AX, 13 ;проверка на энтр
-	JZ end1
-	CMP AX, 48 ;проверка на 0-9
-	JC error
-	CMP AX, 57
-	JZ contin
-	JNC error
+        entersymb:
+        MOV AH, 01h
+        INT 21h
+        xor ah, ah
+        CMP AX, 13 ;проверка на энтр
+        JZ end1
+        CMP AX, 48 ;проверка на 0-9
+        JC error  ;Переход если перенос установлен
+        CMP AX, 57
+        JZ contin
+        JNC error
 
-	contin:
-		SUB AL, 48
-		MOV AH, 0
-		MOV BX, AX
-		MOV AX, temporary
-		MUL u
-		JC error
-		ADD AX, BX
-		JC error
-		MOV temporary, AX
-		JMP entersymb
+        contin:
+                SUB AL, 48
+                MOV AH, 0
+                MOV BX, AX
+                MOV AX, temporary
+                MUL u
+                JC error
+                ADD AX, BX
+                JC error
+                MOV temporary, AX
+                JMP entersymb
 
-	error:
-		LEA DX, repeat
-		MOV AH, 09h
-		INT 21h
-		MOV AX, 0
-		MOV temporary, AX
-		JMP entersymb
+        error:
+                LEA DX, repeat
+                MOV AH, 09h
+                INT 21h
+                MOV AX, 0
+                MOV temporary, AX
+                JMP entersymb
 
-	end1:
+        end1:
 
-	ret
+        ret
 InputInt endp
 
 OutputInt proc
-	MOV CX, 0
+        MOV CX, 0
 
-	next:
-		MOV DX, 0
-		DIV u
-		PUSH DX
-		MOV DX, 0
-		INC CX
-		CMP AX, 0
-		JNZ next
+        next:
+                MOV DX, 0
+                DIV u
+                PUSH DX
+                MOV DX, 0
+                INC CX
+                CMP AX, 0
+                JNZ next
 
-	cycle:
-		POP DX
-		MOV DH, 0
-		ADD DL, 48
-		MOV AH, 02h
-		INT 21h
-		LOOP cycle
+        cycle:
+                POP DX
+                MOV DH, 0
+                ADD DL, 48
+                MOV AH, 02h
+                INT 21h
+                LOOP cycle
 
-	ret
+        ret
 OutputInt endp
 
 stasyan proc
-	push ax
-	push dx
+        push ax
+        push dx
 
-	lea dx, n
-	mov ah, 09h
-	int 21h
+        lea dx, n
+        mov ah, 09h
+        int 21h
 
-	pop dx
-	pop ax
+        pop dx
+        pop ax
 
-	ret
+        ret
 stasyan endp
 
 start:
@@ -141,7 +141,8 @@ MOV AH, 4Ch
 INT 21h
 
 altendofprog:
-LEA DX, errorzero
+LEA DX,
+zero
 MOV AH, 09h
 INT 21h
 
