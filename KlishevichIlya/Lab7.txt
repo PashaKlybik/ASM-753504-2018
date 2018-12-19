@@ -1,21 +1,19 @@
-// WindowsProject1.cpp : Определяет точку входа для приложения.
-//
 
 #include "stdafx.h"
 #include "WindowsProject1.h"
 
 #define MAX_LOADSTRING 100
 
-// Глобальные переменные:
-HINSTANCE hInst;                                // текущий экземпляр
-WCHAR szTitle[MAX_LOADSTRING];                  // Текст строки заголовка
-WCHAR szWindowClass[MAX_LOADSTRING];            // имя класса главного окна
+// Р“Р»РѕР±Р°Р»СЊРЅС‹Рµ РїРµСЂРµРјРµРЅРЅС‹Рµ:
+HINSTANCE hInst;                                // С‚РµРєСѓС‰РёР№ СЌРєР·РјРµРјРїР»СЏСЂ
+WCHAR szTitle[MAX_LOADSTRING];                  // С‚РµРєСЃС‚ СЃС‚СЂРѕРєРё Р·Р°РіРѕР»РѕРІРєР°
+WCHAR szWindowClass[MAX_LOADSTRING];            // РёРјСЏ РєР»Р°СЃСЃР° РіР»Р°РІРЅРѕРіРѕ РѕРєРЅР°
 
 void DrawElement(HDC hdc);
 int X, Y;
 bool Condition = false;
 
-// Отправить объявления функций, включенных в этот модуль кода:
+// РћС‚РїСЂР°РІРёС‚СЊ РѕР±СЉСЏРІР»РµРЅРёСЏ С„СѓРЅРєС†РёР№, РІРєР»СЋС‡РµРЅРЅС‹С… РІ СЌС‚РѕС‚ РјРѕРґСѓР»СЊ РєРѕРґР°:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -29,14 +27,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    // TODO: Разместите код здесь.
+    // TODO: Р Р°Р·РјРµСЃС‚РёС‚Рµ РєРѕРґ Р·РґРµСЃСЊ.
 
-    // Инициализация глобальных строк
+    // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РіР»РѕР±Р°Р»СЊРЅС‹С… СЃС‚СЂРѕРє 
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_WINDOWSPROJECT1, szWindowClass, MAX_LOADSTRING);
     MyRegisterClass(hInstance);
 
-    // Выполнить инициализацию приложения:
+    // Р’С‹РїРѕР»РЅРёС‚СЊ РёРЅРёС†РёР°Р»РёР·Р°С†РёСЋ РїСЂРёР»РѕР¶РµРЅРёСЏ:
     if (!InitInstance (hInstance, nCmdShow))
     {
         return FALSE;
@@ -46,7 +44,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     MSG msg;
 
-    // Цикл основного сообщения:
+    // Р¦РёРєР» РѕСЃРЅРѕРІРЅРѕРіРѕ СЃРѕРѕР±С‰РµРЅРёСЏ:
     while (GetMessage(&msg, nullptr, 0, 0))
     {
         if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
@@ -62,9 +60,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 
 //
-//  ФУНКЦИЯ: MyRegisterClass()
+//  Р¤СѓРЅРєС†РёСЏ: MyRegisterClass()
 //
-//  ЦЕЛЬ: Регистрирует класс окна.
+//  Р¦РµР»СЊ: Р РµРіРёСЃС‚СЂРёСЂСѓРµС‚ РєР»Р°СЃСЃ РѕРєРЅР°.
 //
 ATOM MyRegisterClass(HINSTANCE hInstance)
 {
@@ -88,18 +86,18 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 }
 
 //
-//   ФУНКЦИЯ: InitInstance(HINSTANCE, int)
+//   Р¤СѓРЅРєС†РёСЏ: InitInstance(HINSTANCE, int)
 //
-//   ЦЕЛЬ: Сохраняет маркер экземпляра и создает главное окно
+//   Р¦РµР»СЊ: РЎРѕС…СЂР°РЅСЏРµС‚ РјР°СЂРєРµСЂ СЌРєР·РµРјРїР»СЏСЂР° Рё СЃРѕР·РґР°РµС‚ РіР»Р°РІРЅРѕРµ РѕРєРЅРѕ
 //
-//   КОММЕНТАРИИ:
+//   РљРћРњРњР•РќРўРђР РР:
 //
-//        В этой функции маркер экземпляра сохраняется в глобальной переменной, а также
-//        создается и выводится главное окно программы.
+//        Р’ СЌС‚РѕР№ С„СѓРЅРєС†РёРё РјР°СЂРєРµСЂ СЌРєР·РµРјРїР»СЏСЂР° СЃРѕС…СЂР°РЅСЏРµС‚СЃСЏ РІ РіР»РѕР±Р°Р»СЊРЅРѕР№ РїРµСЂРµРјРµРЅРЅРѕР№, Р° С‚Р°РєР¶Рµ
+//        СЃРѕР·РґР°РµС‚СЃСЏ Рё РІС‹РІРѕРґРёС‚СЃСЏ РіР»Р°РІРЅРѕРµ РѕРєРЅРѕ РїСЂРѕРіСЂР°РјРјС‹.
 //
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-   hInst = hInstance; // Сохранить маркер экземпляра в глобальной переменной
+   hInst = hInstance; // РЎРѕС…СЂР°РЅРёС‚СЊ РјР°СЂРєРµСЂ СЌРєР·РµРјРїР»СЏСЂР° РІ РіР»РѕР±Р°Р»СЊРЅРѕР№ РїРµСЂРµРјРµРЅРЅРѕР№
 
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
@@ -116,13 +114,13 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 }
 
 //
-//  ФУНКЦИЯ: WndProc(HWND, UINT, WPARAM, LPARAM)
+//  Р¤РЈРќРљР¦РРЇ: WndProc(HWND, UINT, WPARAM, LPARAM)
 //
-//  ЦЕЛЬ: Обрабатывает сообщения в главном окне.
+//  Р¦Р•Р›Р¬: РћР±СЂР°Р±Р°С‚С‹РІР°РµС‚ СЃРѕРѕР±С‰РµРЅРёСЏ РІ РіР»Р°РІРЅРѕРј РѕРєРЅРµ.
 //
-//  WM_COMMAND  - обработать меню приложения
-//  WM_PAINT    - Отрисовка главного окна
-//  WM_DESTROY  - отправить сообщение о выходе и вернуться
+//  WM_COMMAND  - РѕР±СЂР°Р±РѕС‚Р°С‚СЊ РјРµРЅСЋ РїСЂРёР»РѕР¶РµРЅРёСЏ
+//  WM_PAINT    - РћС‚СЂРёСЃРѕРІРєР° РіР»Р°РІРЅРѕРіРѕ РѕРєРЅР°
+//  WM_DESTROY  - РѕС‚РїСЂР°РІРёС‚СЊ СЃРѕРѕР±С‰РµРЅРёРµ Рѕ РІС‹С…РѕРґРµ Рё РІРµСЂРЅСѓС‚СЊСЃСЏ
 //
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -131,7 +129,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
 	case WM_CREATE:
 	{
-		hWnd = CreateWindowEx(NULL, L"BUTTON", L"Очистить", WS_CHILD, 0, 0, 200, 50, hWnd, HMENU(99), hInst, NULL);
+		hWnd = CreateWindowEx(NULL, L"BUTTON", L"ГЋГ·ГЁГ±ГІГЁГІГј", WS_CHILD, 0, 0, 200, 50, hWnd, HMENU(99), hInst, NULL);
 		ShowWindow(hWnd, SW_SHOWNORMAL);
 		break;
 	}
@@ -144,7 +142,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_COMMAND:
         {
             int wmId = LOWORD(wParam);
-            // Разобрать выбор в меню:
+            // Р Р°Р·РѕР±СЂР°С‚СЊ РІС‹Р±РѕСЂ РІ РјРµРЅСЋ:
             switch (wmId)
             {
 			case 99:
@@ -166,7 +164,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-            // TODO: Добавьте сюда любой код прорисовки, использующий HDC...
+            // TODO: Р”РѕР±Р°РІСЊС‚Рµ СЃСЋРґР° Р»СЋР±РѕР№ РєРѕРґ РїСЂРѕСЂРёСЃРѕРІРєРё, РёСЃРїРѕР»СЊР·СѓСЋС‰РёР№ HDC...
 			DrawElement(hdc);
             EndPaint(hWnd, &ps);
         }
@@ -180,7 +178,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-// Обработчик сообщений для окна "О программе".
+// РћР±СЂР°Р±РѕС‚С‡РёРє СЃРѕРѕР±С‰РµРЅРёР№ РґР»СЏ РѕРєРЅР° "Рћ РїСЂРѕРіСЂР°РјРјРµ".
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
     UNREFERENCED_PARAMETER(lParam);
