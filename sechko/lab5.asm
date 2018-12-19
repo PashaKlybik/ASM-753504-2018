@@ -12,7 +12,7 @@
     stock dw ?
 .code
 
-proc Out         ; запись числа в файл
+proc Out         ; Г§Г ГЇГЁГ±Гј Г·ГЁГ±Г«Г  Гў ГґГ Г©Г«
     push ax
     push bx
     push cx
@@ -56,7 +56,7 @@ outChar:
     ret
 endp
 
-proc writeChar    ; символ в текст 
+proc writeChar    ; Г±ГЁГ¬ГўГ®Г« Гў ГІГҐГЄГ±ГІ 
     push ax
     push bx
     push cx
@@ -75,7 +75,7 @@ proc writeChar    ; символ в текст
 endp
 
 
-proc readChar     ; считывает символ из файла
+proc readChar     ; Г±Г·ГЁГІГ»ГўГ ГҐГІ Г±ГЁГ¬ГўГ®Г« ГЁГ§ ГґГ Г©Г«Г 
     push ax
     push bx
     push cx
@@ -105,14 +105,14 @@ notLast:
     ret
 endp
 
-proc In           ; строка=число 
+proc In           ; Г±ГІГ°Г®ГЄГ =Г·ГЁГ±Г«Г® 
     push dx
     push bx
     push cx
     
-    mov bx, 10    ; Основание системы счисления
-    xor ch, ch    ; Флаг знака
-    xor ax, ax    ; Результат
+    mov bx, 10    ; ГЋГ±Г­Г®ГўГ Г­ГЁГҐ Г±ГЁГ±ГІГҐГ¬Г» Г±Г·ГЁГ±Г«ГҐГ­ГЁГї
+    xor ch, ch    ; Г”Г«Г ГЈ Г§Г­Г ГЄГ 
+    xor ax, ax    ; ГђГҐГ§ГіГ«ГјГІГ ГІ
     
     call readChar
     cmp dl, '-'
@@ -141,7 +141,7 @@ endIn:
     ret
 endp
 
-proc readArray     ; читает массив
+proc readArray     ; Г·ГЁГІГ ГҐГІ Г¬Г Г±Г±ГЁГў
     push ax
     push dx
     push cx
@@ -172,7 +172,7 @@ toArray:
     ret
 endp
 
-proc compare        ; расчет
+proc compare        ; Г°Г Г±Г·ГҐГІ
     push ax
     push bx
     push dx
@@ -188,7 +188,10 @@ proc compare        ; расчет
 
 tofinArray:   
     mov ax, [di]
-    mul word ptr[si]    
+    cmp ax, word ptr[si]
+    jg aIsBigger
+    mov ax, [si]
+aIsBigger:
     mov word ptr[bx], ax
 
     add bx, 2
@@ -203,7 +206,7 @@ tofinArray:
     ret
 endp
 
-proc writeArray      ; запись массива
+proc writeArray      ; Г§Г ГЇГЁГ±Гј Г¬Г Г±Г±ГЁГўГ 
     push ax
     push dx
     push cx
@@ -230,7 +233,7 @@ fromArray:
     ret
 endp
 
-proc openFile       ; открытие файла 
+proc openFile       ; Г®ГІГЄГ°Г»ГІГЁГҐ ГґГ Г©Г«Г  
     push ax
     
     mov al, 2
@@ -243,7 +246,7 @@ proc openFile       ; открытие файла
     ret
 endp
 
-proc closeFile      ; закрытие файла
+proc closeFile      ; Г§Г ГЄГ°Г»ГІГЁГҐ ГґГ Г©Г«Г 
     push ax
     push bx
     
