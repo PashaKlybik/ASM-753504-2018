@@ -1,7 +1,7 @@
 .model tiny
 .code
 org 100h
-Begin:
+main:
 jmp Modification
 
 Resident proc
@@ -59,4 +59,4 @@ Modification:
 	mov dx,offset Modification
 	int 27h
 	
-end Begin
+end main
