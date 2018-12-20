@@ -1,23 +1,10 @@
-.model small
-.stack 256
-.data	
+.model tiny
 .code
-main:
+org 100h
+Begin:
+jmp Modification
 
-Modification:
-	mov ax,3515h
-	int 21h   
-	mov word ptr int15hVect,bx
-	mov word ptr int15hVect+2,es
-	mov ax,2515h
-	mov dx,offset CharChanging
-	int 21h
-	mov dx,offset Modification
-	int 27h
-	
-end main
-
-CharChanging proc
+Resident proc
 	in al,60h
 	cmp al,1Eh				
 	jne IsE
@@ -59,4 +46,17 @@ ToOldInt09h :
 	jmp dword ptr cs : int15hVect
 
 	int15hVect dd ?
-CharChanging endp
+Resident endp
+
+Modification:
+	mov ax,3515h
+	int 21h   
+	mov word ptr int15hVect,bx
+	mov word ptr int15hVect+2,es
+	mov ax,2515h
+	mov dx,offset Resident
+	int 21h
+	mov dx,offset Modification
+	int 27h
+	
+end Begin
