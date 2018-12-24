@@ -1,218 +1,230 @@
+#include <windows.h>
+#include "resource.h"
 
-#include "stdafx.h"
-#include "WindowsProject1.h"
+#define ID_BTN 12
 
-#define MAX_LOADSTRING 100
+const char g_szClassName[] = "myWindowClass";
+const int ID_TIMER = 1;
 
-// Глобальные переменные:
-HINSTANCE hInst;                                // текущий экзмемпляр
-WCHAR szTitle[MAX_LOADSTRING];                  // текст строки заголовка
-WCHAR szWindowClass[MAX_LOADSTRING];            // имя класса главного окна
+const int EMP_X = 10;
+const int EMP_Y = 33;
+const int WORKSPACE_EMP_Y = 91;
+const int TRAIN_D = 2;
 
-void DrawElement(HDC hdc);
-int X, Y;
-bool Condition = false;
+bool isDrawn = false;
 
-// Отправить объявления функций, включенных в этот модуль кода:
-ATOM                MyRegisterClass(HINSTANCE hInstance);
-BOOL                InitInstance(HINSTANCE, int);
-LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
-INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
-
-int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-                     _In_opt_ HINSTANCE hPrevInstance,
-                     _In_ LPWSTR    lpCmdLine,
-                     _In_ int       nCmdShow)
+typedef struct _TrainInfo
 {
-    UNREFERENCED_PARAMETER(hPrevInstance);
-    UNREFERENCED_PARAMETER(lpCmdLine);
+    int width;
+    int height;
+    int x;
+    int y;
 
-    // TODO: Разместите код здесь.
+    int dx;
+    int dy;
+} TrainInfo;
 
-    // Инициализация глобальных строк 
-    LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-    LoadStringW(hInstance, IDC_WINDOWSPROJECT1, szWindowClass, MAX_LOADSTRING);
-    MyRegisterClass(hInstance);
+TrainInfo trainInfo;
+HICON hIcon = NULL;
+HBITMAP ballImage = NULL;
+HBITMAP backgroundImage = NULL;
 
-    // Выполнить инициализацию приложения:
-    if (!InitInstance (hInstance, nCmdShow))
-    {
-        return FALSE;
+void ClearWorkspace(HWND hwnd)
+{
+    RECT a;
+    a.bottom = 507;
+    a.left = 0;
+    a.right = 500;
+    a.top = 0;
+    InvalidateRect(hwnd, &a, true);
+}
+
+void UpdateBallPosition(RECT* prc)
+{
+    trainInfo.x += trainInfo.dx;
+    trainInfo.y += trainInfo.dy;
+
+    if (trainInfo.x < 0) {
+        trainInfo.x = 0;
+        trainInfo.dx = TRAIN_D;
+    } else if (trainInfo.x + trainInfo.width > prc->right) {
+        trainInfo.x = prc->right - trainInfo.width;
+        trainInfo.dx = -TRAIN_D;
     }
 
-    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_WINDOWSPROJECT1));
+    if(trainInfo.y < 0) {
+        trainInfo.y = 0;
+        trainInfo.dy = TRAIN_D;
+    } else if(trainInfo.y + trainInfo.height > prc->bottom - WORKSPACE_EMP_Y) {
+        trainInfo.y = prc->bottom - WORKSPACE_EMP_Y - trainInfo.height;
+        trainInfo.dy = -TRAIN_D;
+    }
+}
 
-    MSG msg;
+void DrawBitmap(HWND hwnd, int x, int y, HBITMAP pic)
+{
+    BITMAP bm;
+    PAINTSTRUCT ps;
 
-    // Цикл основного сообщения:
-    while (GetMessage(&msg, nullptr, 0, 0))
-    {
-        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
+    HDC hdc = BeginPaint(hwnd, &ps);
+
+    HDC hdcMem = CreateCompatibleDC(hdc);
+    HBITMAP hbmOld = (HBITMAP)SelectObject(hdcMem, pic);
+
+    GetObject(pic, sizeof(bm), &bm);
+
+    BitBlt(hdc, x, y, bm.bmWidth, bm.bmHeight, hdcMem, 0, 0, SRCCOPY);
+
+    SelectObject(hdcMem, hbmOld);
+    DeleteDC(hdcMem);
+
+    EndPaint(hwnd, &ps);
+}
+
+LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    switch(msg) {
+        case WM_CREATE: {
+            hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(MYICON));
+            SendMessage(hwnd, WM_SETICON, ICON_BIG, (LPARAM)hIcon);
+
+            ballImage = LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(BALL));
+            if(ballImage == NULL)
+                MessageBox(hwnd, "Could not load image!", "Error", MB_OK | MB_ICONEXCLAMATION);
+
+            backgroundImage = LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_YEAR));
+
+            CreateWindow("BUTTON",
+                      "CLEAR",
+                      WS_VISIBLE | WS_CHILD | WS_BORDER,
+                      20, 550, 100, 20,
+                      hwnd, (HMENU) 1, NULL, NULL);
+
+            CreateWindow("BUTTON",
+                      "CLOSE",
+                      WS_VISIBLE | WS_CHILD | WS_BORDER,
+                      350, 550, 100, 20,
+                      hwnd, (HMENU) ID_BTN, NULL, NULL);
         }
-    }
+        break;
 
-    return (int) msg.wParam;
-}
-
-
-
-//
-//  Функция: MyRegisterClass()
-//
-//  Цель: Регистрирует класс окна.
-//
-ATOM MyRegisterClass(HINSTANCE hInstance)
-{
-    WNDCLASSEXW wcex;
-
-    wcex.cbSize = sizeof(WNDCLASSEX);
-
-    wcex.style          = CS_HREDRAW | CS_VREDRAW;
-    wcex.lpfnWndProc    = WndProc;
-    wcex.cbClsExtra     = 0;
-    wcex.cbWndExtra     = 0;
-    wcex.hInstance      = hInstance;
-    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_WINDOWSPROJECT1));
-    wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
-    wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
-    wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_WINDOWSPROJECT1);
-    wcex.lpszClassName  = szWindowClass;
-    wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
-
-    return RegisterClassExW(&wcex);
-}
-
-//
-//   Функция: InitInstance(HINSTANCE, int)
-//
-//   Цель: Сохраняет маркер экземпляра и создает главное окно
-//
-//   КОММЕНТАРИИ:
-//
-//        В этой функции маркер экземпляра сохраняется в глобальной переменной, а также
-//        создается и выводится главное окно программы.
-//
-BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
-{
-   hInst = hInstance; // Сохранить маркер экземпляра в глобальной переменной
-
-   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
-
-   if (!hWnd)
-   {
-      return FALSE;
-   }
-
-   ShowWindow(hWnd, nCmdShow);
-   UpdateWindow(hWnd);
-
-   return TRUE;
-}
-
-//
-//  ФУНКЦИЯ: WndProc(HWND, UINT, WPARAM, LPARAM)
-//
-//  ЦЕЛЬ: Обрабатывает сообщения в главном окне.
-//
-//  WM_COMMAND  - обработать меню приложения
-//  WM_PAINT    - Отрисовка главного окна
-//  WM_DESTROY  - отправить сообщение о выходе и вернуться
-//
-//
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-    switch (message)
-    {
-	case WM_CREATE:
-	{
-		hWnd = CreateWindowEx(NULL, L"BUTTON", L"Î÷èñòèòü", WS_CHILD, 0, 0, 200, 50, hWnd, HMENU(99), hInst, NULL);
-		ShowWindow(hWnd, SW_SHOWNORMAL);
-		break;
-	}
-	case WM_LBUTTONDOWN:
-		Condition = true;
-		X = LOWORD(lParam);
-		Y = HIWORD(lParam);
-		InvalidateRect(hWnd, NULL, FALSE);
-		break;
-    case WM_COMMAND:
-        {
-            int wmId = LOWORD(wParam);
-            // Разобрать выбор в меню:
-            switch (wmId)
-            {
-			case 99:
-				Condition = false;
-				InvalidateRect(hWnd, NULL, TRUE);
-				break;
-            case IDM_ABOUT:
-                DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+        case WM_COMMAND: {
+            switch (LOWORD(wParam)) {
+                case 1: {
+                    if (isDrawn) {
+                        KillTimer(hwnd, ID_TIMER);
+                        ClearWorkspace(hwnd);
+                        isDrawn = false;
+                    }
+                }
                 break;
-            case IDM_EXIT:
-                DestroyWindow(hWnd);
-                break;
-            default:
-                return DefWindowProc(hWnd, message, wParam, lParam);
+
+                case ID_BTN:{
+                    DestroyWindow(hwnd);
+                    break;
+                }
             }
         }
         break;
-    case WM_PAINT:
-        {
-            PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hWnd, &ps);
-            // TODO: Добавьте сюда любой код прорисовки, использующий HDC...
-			DrawElement(hdc);
-            EndPaint(hWnd, &ps);
+
+        case WM_LBUTTONDOWN: {
+            if (!isDrawn) {
+                UINT ret;
+                BITMAP bm;
+                GetObject(ballImage, sizeof(bm), &bm);
+                ZeroMemory(&trainInfo, sizeof(trainInfo));
+                trainInfo.width = bm.bmWidth;
+                trainInfo.height = bm.bmHeight;
+
+                POINT cursorPos;
+                RECT pos;
+                GetCursorPos(&cursorPos);
+                float x = cursorPos.x, y = cursorPos.y;
+                GetWindowRect(hwnd, &pos);
+                float a = pos.left, b = pos.top;
+                trainInfo.x = x - a - EMP_X - trainInfo.width / 2;
+                trainInfo.y = y - b - EMP_Y - trainInfo.height / 2;
+
+                trainInfo.dx = TRAIN_D;
+                trainInfo.dy = TRAIN_D;
+
+                SetTimer(hwnd, ID_TIMER, 10, NULL);
+                isDrawn = true;
+            } else {
+                KillTimer(hwnd, ID_TIMER);
+
+            }
         }
         break;
-    case WM_DESTROY:
-        PostQuitMessage(0);
+
+        case WM_CLOSE:
+            DestroyWindow(hwnd);
         break;
-    default:
-        return DefWindowProc(hWnd, message, wParam, lParam);
+
+        case WM_PAINT: {
+            DrawBitmap(hwnd, 0, 507, backgroundImage);
+        }
+        break;
+
+        case WM_TIMER: {
+            RECT rcClient;
+            GetClientRect(hwnd, &rcClient);
+            UpdateBallPosition(&rcClient);
+            ClearWorkspace(hwnd);
+            DrawBitmap(hwnd, trainInfo.x, trainInfo.y, ballImage);
+        }
+        break;
+
+        case WM_DESTROY: {
+            KillTimer(hwnd, ID_TIMER);
+            DeleteObject(ballImage);
+            DeleteObject(backgroundImage);
+            DeleteObject(hIcon);
+            PostQuitMessage(0);
+        }
+        break;
+
+        default:
+            return DefWindowProc(hwnd, msg, wParam, lParam);
     }
     return 0;
 }
 
-// Обработчик сообщений для окна "О программе".
-INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+    LPSTR lpCmdLine, int nCmdShow)
 {
-    UNREFERENCED_PARAMETER(lParam);
-    switch (message)
-    {
-    case WM_INITDIALOG:
-        return (INT_PTR)TRUE;
+    WNDCLASSEX wc;
+    HWND hwnd;
+    MSG Msg;
 
-    case WM_COMMAND:
-        if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
-        {
-            EndDialog(hDlg, LOWORD(wParam));
-            return (INT_PTR)TRUE;
-        }
-        break;
+    wc.cbSize        = sizeof(WNDCLASSEX);
+    wc.style         = 0;
+    wc.lpfnWndProc   = WndProc;
+    wc.cbClsExtra    = 0;
+    wc.cbWndExtra    = 0;
+    wc.hInstance     = hInstance;
+    wc.hIcon         = LoadIcon(NULL, IDI_APPLICATION);
+    wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
+    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
+    wc.lpszMenuName  = NULL;
+    wc.lpszClassName = g_szClassName;
+    wc.hIconSm       = LoadIcon(NULL, IDI_APPLICATION);
+    RegisterClassEx(&wc);
+
+    hwnd = CreateWindowEx(
+        WS_EX_CLIENTEDGE,
+        g_szClassName,
+        "NEW YEAR",
+        WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT, CW_USEDEFAULT, 500, 650,
+        NULL, NULL, hInstance, NULL);
+
+    ShowWindow(hwnd, nCmdShow);
+    UpdateWindow(hwnd);
+
+    while(GetMessage(&Msg, NULL, 0, 0) > 0) {
+        TranslateMessage(&Msg);
+        DispatchMessage(&Msg);
     }
-    return (INT_PTR)FALSE;
-}
-
-void DrawElement(HDC hdc)
-{
-	if (Condition) 
-	{
-		HBRUSH hGreenBrush,hBlueBrush;
-		hGreenBrush = CreateSolidBrush(RGB(0, 120, 0));
-		hBlueBrush = CreateSolidBrush(RGB(0,0,255));
-		HPEN hBlackPen;
-		hBlackPen = CreatePen(PS_SOLID, 2, RGB(0, 0, 0));
-		SelectObject(hdc, hBlackPen);
-		Arc(hdc, X - 20, Y - 70, X + 20, Y - 150, X, Y - 45, X, Y - 45);
-		SelectObject(hdc, hGreenBrush);
-		Rectangle(hdc, X - 18, Y - 45, X + 18, Y - 75);
-		SelectObject(hdc, hBlueBrush);
-		Ellipse(hdc, X-60, Y-60, X + 60, Y + 60);
-		
-	}
+    return Msg.wParam;
 }
