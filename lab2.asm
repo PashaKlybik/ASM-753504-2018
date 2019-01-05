@@ -1,185 +1,149 @@
-.model small
-.stack 100
+model small                    
+.stack 100h         
+
 .data
-    digits_counter dw 0
-    ten dw 10
-	wrong_input db "...Incorrect input$"
-    zero db "You tried to divide by zero...Nothing happened.$"   
-.code 
+devident dw 0
+devider dw 0
+inputdevident db "Enter devident: ", '$'
+inputdevider db "Enter devider: ", '$'
+results db "Result:", 13, 10, "integer = ", '$'
+fractional db ", fractional = $"
+exzero db "Division by zero!", 13, 10, '$'
+repeat db 13, 10,"Repeat please!", 13, 10, '$'
+n db 10,"$"
+u dw 10
+temp dw 0
+ost dw ?
+cel dw ?
+.code
 
-endl proc
-	push dx
-	push ax
+InputInt proc   
 
-	mov dl, 0AH
-	mov ah, 02h
-	int 21h
-	
-	pop ax
-	pop dx
-	ret
-endl endp
+        entersymbol:
+        mov ah, 01h 
+        int 21h
+        xor ah, ah 
+        cmp ax, 13 
+        jz firstend
+        cmp ax, 48 
+        jc error   
+        cmp ax, 57 
+        jz next1  
+        jnc error 
 
-input proc
-	push bx
-	push cx
-	push dx
+        next1:
+                sub al, 48
+                xor ah, ah  
+                mov bx, ax  
+                mov ax, temp 
+                mul u
+                jc error
+                add ax, bx 
+                jc error
+                mov temp, ax 
+                jmp entersymbol
 
-	mov bx, 0
-	mov dx, 0
-	mov digits_counter, 0
+        error:
+                lea dx, repeat 
+                mov ah, 09h
+                int 21h
+                xor ax, ax
+                mov temp, ax
+                jmp entersymbol 
 
-	reading:
-		mov ah, 01h
-		int 21h
+        firstend:
+        ret
 
-		cmp al, 8 ; backspace 
-		jz backspace
+InputInt endp 
 
-		cmp al, 13
-		jz good_input
+OutputInt proc
+        xor cx,cx 
 
-		cmp al, 48 ; '0' = 48 
-		jc bad_input
+        next2:
+                xor dx, dx
+                div u
+                push dx
+                xor dx, dx
+                inc cx
+                cmp ax, 0 
+                jnz next2  
 
-		cmp al, 58 ; 
-		jnc bad_input
+        cycle:
+                pop dx 
+                mov DH, 0
+                add dl, 48
+                mov ah, 02h
+                int 21h 
+                loop cycle 
+                ret
+OutputInt endp 
 
-		mov cl, al ; bx = bx * 10 + al - 48
+func proc
+        push ax
+        push dx
 
-		mov ax, bx
-		mul ten
-		mov bx, ax
+        lea dx, n
+        mov ah, 09h 
+        int 21h
 
-		cmp dx, 0 ; dx == 0 else too large
-		jnz bad_input 
+        pop dx
+        pop ax
 
-		sub cl, 48
-		mov ch, 0
-		add bx, cx
+        ret
+func endp
 
-		inc digits_counter
+main:  
+mov ax, @data        
+mov ds, ax     
 
-		jc bad_input
-	jmp	reading
+lea dx, inputdevident   
+mov ah, 09h
+int 21h
+call InputInt  
+push temp
+pop devident
+mov temp, 0
 
-	backspace:
-		cmp digits_counter, 0
-		jz reading
+lea dx, inputdevider    
+mov ah, 09h
+int 21h
+call InputInt
+push temp
+pop devider
+mov temp, 0 
 
-		mov ax, bx
-		div ten
-		mov bx, ax
+cmp devider, 0
+jz label1 
 
-		mov dl, ' '
-		mov ah, 02h
-		int 21h
+mov ax, devident
+cwd  
+div devider
 
-		mov dl, 8
-		mov ah, 02h
-		int 21h
-		
-		mov dl, 0
-		dec digits_counter
-		jmp reading
+mov cel, ax 
+mov ost, dx 
 
-	good_input:
-		cmp digits_counter, 0
-		jz reading
+lea dx, results        
+mov ah, 09h
+int 21h    
+mov ax, cel  
+call outputint
 
-		mov ax, bx
-		jmp finish
+lea dx, fractional      
+mov ah, 09h
+int 21h
+mov ax, ost 
+call outputint
 
-	bad_input:
-		lea dx, wrong_input
-		mov ah, 09h
-		int 21h
+call func
 
-		mov bx, 0
-		mov dx, 0
-		mov ax, 0
-		mov digits_counter, 0
-		call endl
-	jmp reading
-		
-	finish:
-		pop dx
-		pop cx
-		pop bx
-	ret
-input endp
+mov ah, 4Ch
+int 21h     
 
-output proc
-	push ax
-	push cx
-	push dx
-
-	mov cx, 0
-	mov dx, 0 
-
-	division :
-	    div ten
-	    push dx
-	    mov dx, 0
-	   	inc cx
-
-	    cmp ax, 0
-	    jnz division 
-
-	cmp cx, 0
-	jnz non_zero_came
-
-	push 0
-	mov cx, 1
-	
-	non_zero_came:
-		pop dx
-		add dx, '0'
-		mov ah, 02h
-		int 21h
-	loop non_zero_came
-
-	pop dx
-	pop cx
-	pop ax
-	ret
-output endp
-
-main:
-    mov ax, @data
-    mov ds, ax
-
-    call input
-    call output
-	call endl
-
-    mov cx, ax
-
-    call input
-    call output
-    call endl
-
-    mov dx, cx
-    mov cx, ax
-    mov ax, dx
-
-    mov dx, 0  
-    cmp cx, 0
-    jz div_by_zero
-
-    div cx
-
-    call output
-    call endl
-    jmp end_main 
-
-    div_by_zero:
-    	lea dx, zero
-		mov ah, 09h
-		int 21h
-
-	end_main:
-	    mov ax, 4c00h
-	    int 21h
-
-end main
+label1:
+lea dx, exzero       
+mov ah, 09h
+int 21h  
+        
+mov ah, 4Ch
+int 21h
+END main
