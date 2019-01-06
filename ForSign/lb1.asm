@@ -1,10 +1,10 @@
 .model small
 .stack 256
 .data
-    a dw 13
-    b dw 13
-	n dw 17
-	d dw 14
+    a dw 7
+    b dw 5
+	n dw 3
+	d dw 9
 ;    message db 'Hello world!', 13, 10, '$'
 .code
 main:
@@ -15,61 +15,58 @@ main:
 
     mov ax, a
 	mov bx, n
-    mul bx
-		mov cx, ax ; beckap
+    mul bx			;multiplying
+	mov cx, ax 		;backup after assuming
 	mov ax ,b
 	mov bx, d
-	mul bx
+	mul bx			;multiplying
 	mov ax, 0
 	add ax, bx
-	add ax, cx
-
-	 ; making next sum
-
-		mov cx, ax ; snova beckap
+	add ax, cx	;making sum
+	 		   ; making next sum
+	mov cx, ax ; snova beckap
 	mov ax, a
 	mov bx, d
-    mul bx
-    	push cx
-	    mov cx, ax
+    mul bx			;multiplying
+    push cx			;saving cx
+	mov cx, ax
 	mov ax, b
 	mov bx, n
-	mul bx
+	mul bx			;multiplying
 	mov ax, 0
 	add ax, bx
-	add ax, cx
+	add ax, cx		;making sum
 	;xor cx,cx
-		pop cx
+		pop cx		;bringing back cx
 
-	 ; 1st compare
+	 				; 1st compare
 
-	cmp ax, cx
+	cmp ax, cx		;if equal
 	jl nope
-	jg nope
+	jg nope 		;jump if all not
 	mov ax, a
-	mul ax
+	mul ax ;result
 	jmp exit
 
-	 ; if not
+	 ; if not equal
 
-	nope:
+	nope:				;jumppoint
 	mov ax, a
 	mov bx, n
 	cmp ax, bx
-	jl nopesecond
-	jg nopesecond
+	jle nopesecond
 	mov ax, a
-	and ax, n
+	and ax, n ;result
 	jmp exit
 
-	 ; if not
+	 ; if c<=a jump because it's not what we need
 
-	nopesecond:
+	nopesecond:			;jumppoint
 	mov ax, b
 	or ax, n
 	mov bx, ax
 	mov ax, a
-	sub ax, bx
+	sub ax, bx ;result
 	jmp exit
 
 	exit:
